@@ -6,14 +6,14 @@ Pipeline = predict_test_realigned: calib(fit_T)+F1-weights+rules+esg_type prior+
 ONLY timeline offset is tuned (realignment: timeline-offset transfers +0.012; P/E/Q offsets overfit).
 Then cascade + compliance + Misleading overrides.
 
-  python3 pipeline/evaluation/build_tapt_hybrid.py --out submissions/.../submission.csv \
+  python3 pipeline/build_tapt_hybrid.py --out submissions/.../submission.csv \
       --misleading 12772,12743,12306,12606 [--timeline_offset 0.1,0,-0.1,-0.1,0] [--no_offset]
 """
 import argparse, json, numpy as np, sys, os
 from sklearn.metrics import f1_score
-sys.path.insert(0,'pipeline/evaluation')
+sys.path.insert(0,'pipeline')
 import importlib.util
-spec=importlib.util.spec_from_file_location("R","pipeline/evaluation/predict_test_realigned.py")
+spec=importlib.util.spec_from_file_location("R","pipeline/predict_test_realigned.py")
 R=importlib.util.module_from_spec(spec); spec.loader.exec_module(R)
 FIELDS,LABELS,SCORED,W=R.FIELDS,R.LABELS,R.SCORED,R.W
 KF=['v1_robertawwm','v2_xlmr_large','v3_bgem3','v5_bgem3_aug','v6_bgem3_augfull','v7_bgem3_aug_all',
@@ -65,7 +65,7 @@ def main():
 
     val=json.load(open('data_set/vpesg4k_val_1000.json')); vby={str(v['id']):v for v in val}
     test=json.load(open('data_set/vpesg4k_test_2000.json'))
-    priors=json.load(open('pipeline/evaluation/rules/esg_type_priors.json'))
+    priors=json.load(open('pipeline/rules/esg_type_priors.json'))
     vspan={x['id']:x for x in json.load(open('data_set/claude_spans/val_spans_raw.json'))}
     tspan={x['id']:x for x in json.load(open('data_set/claude_spans/test_spans_raw.json'))}
     # --- load preds ---

@@ -69,3 +69,17 @@ file. The authoritative artifact is the committed CSV in `submissions/`.
 python fusion/fuse_predict.py --split valeval --only ckip_tapt_ep3,macbert_tapt,bgem3,bgem3_tapt \
     --data fusion/data/raw/vpesg4k_val_1000.json --out strong4_val.csv --score
 ```
+
+## Inputs / dependencies for the final builder
+
+`pipeline/build_tapt_hybrid.py` consumes, in addition to the fused binary CSV:
+
+- the official data JSONs (`data_set/vpesg4k_val_1000.json`, `vpesg4k_test_2000.json`);
+- the **timeline / quality** model probabilities for the val and test sets, written by
+  `training/predict_probs.py` into per-model `*_io/bert_<name>/` directories (default
+  `/tmp/val_io`, `/tmp/test_io`); these come from the multi-task BERT models;
+- evidence span files (`data_set/claude_spans/*_spans_raw.json`) used by the data-only rules.
+
+These artifacts are produced by the training/prediction code in `training/` and `fusion/`; paths
+are configurable via the argparse defaults in `pipeline/predict_test_realigned.py`. The committed
+`submissions/FINAL_SUBMISSION_yayou_0.6760.csv` is the authoritative output.
