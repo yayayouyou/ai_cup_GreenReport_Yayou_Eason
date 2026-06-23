@@ -95,3 +95,5 @@ All techniques are standard published methods, reimplemented here:
   test-time aggregation experiments (see METHODOLOGY.md).
 
 See [METHODOLOGY.md](METHODOLOGY.md) for the full method and [REPRODUCE.md](REPRODUCE.md) to run it.
+
+> Misleading detection (prompt + models + candidate list): [docs/MISLEADING.md](docs/MISLEADING.md)

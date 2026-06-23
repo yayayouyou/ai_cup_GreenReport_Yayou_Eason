@@ -87,3 +87,5 @@ REPRODUCE.md  / REPRODUCE.zh-TW.md       逐步重現
 - 全形→半形數字/字母正規化;逐欄位 F1 加權軟投票集成;test-time aggregation 實驗(見 METHODOLOGY)。
 
 詳見 [METHODOLOGY.zh-TW.md](METHODOLOGY.zh-TW.md) 與 [REPRODUCE.zh-TW.md](REPRODUCE.zh-TW.md)。
+
+> Misleading 偵測(提示詞 + 模型 + 候選清單):[docs/MISLEADING.zh-TW.md](docs/MISLEADING.zh-TW.md)
