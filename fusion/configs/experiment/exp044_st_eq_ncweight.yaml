@@ -1,0 +1,17 @@
+name: exp044_st_eq_ncweight
+model:      configs/model/bert_ckip_base.yaml
+preprocess: configs/preprocess/fullwidth.yaml
+data:
+  train: "data/raw/vpesg_4k_train_1000.json"
+  val_split: 0.2
+  seed: 42
+training:
+  epochs: 20
+  batch_size: 16
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+  early_stopping_patience: 5
+  train_tasks: ["evidence_quality"]
+  class_weight_manual:
+    evidence_quality: {"Clear": 1.0, "Not Clear": 3.0, "Misleading": 1.0, "N/A": 1.0}
+output_dir: experiments/exp044_st_eq_ncweight

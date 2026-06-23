@@ -1,0 +1,11 @@
+name: exp002_ollama_v1
+description: "Gemma4 26B (Ollama local) — zero-shot baseline, prompt v1"
+
+preprocess: configs/preprocess/esg_clean.yaml
+model:      configs/model/ollama_gemma4.yaml
+prompt:     configs/prompts/v1_zero_shot.txt
+
+data:
+  val: data/splits/val.json
+
+output_dir: experiments/exp002_ollama_v1

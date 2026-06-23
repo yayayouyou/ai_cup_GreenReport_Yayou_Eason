@@ -1,0 +1,5 @@
+name: macbert_large
+type: bert_multitask
+pretrained: hfl/chinese-macbert-large
+max_length: 256
+dropout: 0.1

@@ -1,0 +1,15 @@
+name: exp024_aug_llm_clean799
+model:      configs/model/bert_ckip_base.yaml
+preprocess: configs/preprocess/fullwidth.yaml
+data:
+  train:   "data/raw/vpesg_4k_train_1000.json"
+  augment: "data/augmented/no_llm_clean.jsonl"
+  val_split: 0.2
+  seed: 42
+training:
+  epochs: 20
+  batch_size: 16
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+  early_stopping_patience: 5
+output_dir: experiments/exp024_aug_llm_clean799

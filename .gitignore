@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.DS_Store
+.env
+experiments/
+models/
+*.pt
+data/raw/
+fusion/data/
+fusion/experiments/
+fusion/models/

@@ -1,0 +1,10 @@
+name: esg_prefix
+steps:
+  - normalize_esg_type:
+      sort_labels: true
+  - fill_empty_esg_type:
+      fill_value: "Unknown"
+  - normalize_timeline:
+      rename: {}
+  - add_esg_prefix:       # 在文本前加 [E] / [S;G] 等前綴，給模型類型提示
+      template: "[{esg_type}]"

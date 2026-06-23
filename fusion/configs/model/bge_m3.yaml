@@ -1,0 +1,5 @@
+name: bge_m3
+type: bert_multitask
+pretrained: BAAI/bge-m3
+max_length: 256
+dropout: 0.1

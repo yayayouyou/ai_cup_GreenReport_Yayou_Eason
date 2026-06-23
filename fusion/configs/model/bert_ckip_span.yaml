@@ -1,0 +1,5 @@
+name: bert_ckip_span
+type: bert_multitask_span
+pretrained: ckiplab/bert-base-chinese
+max_length: 512
+dropout: 0.1

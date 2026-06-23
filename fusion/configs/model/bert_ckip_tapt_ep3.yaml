@@ -1,0 +1,5 @@
+name: bert_ckip_tapt_ep3
+type: bert_multitask
+pretrained: models/ckip-tapt-ep3
+max_length: 256
+dropout: 0.1

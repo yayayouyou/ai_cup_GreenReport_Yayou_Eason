@@ -1,0 +1,10 @@
+name: fullwidth
+steps:
+  - normalize_esg_type:
+      sort_labels: true
+  - fill_empty_esg_type:
+      fill_value: "Unknown"
+  - normalize_timeline:
+      rename: {}
+  - normalize_fullwidth:    # 全形→半形（NFKC），統一數字、字母、標點編碼
+      field: data

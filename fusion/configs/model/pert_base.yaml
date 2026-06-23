@@ -1,0 +1,5 @@
+name: pert_base
+type: bert_multitask
+pretrained: hfl/chinese-pert-base
+max_length: 256
+dropout: 0.1

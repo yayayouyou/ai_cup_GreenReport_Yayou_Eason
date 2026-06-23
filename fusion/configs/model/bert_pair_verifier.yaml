@@ -1,0 +1,6 @@
+name: bert_pair_verifier_ckip
+type: bert_pair_verifier
+pretrained: ckiplab/bert-base-chinese
+max_length: 256
+dropout: 0.1
+num_labels: 3

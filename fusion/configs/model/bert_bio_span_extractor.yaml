@@ -1,0 +1,9 @@
+name: bert_bio_span_extractor
+type: bert_bio_span_extractor
+pretrained: ckiplab/bert-base-chinese
+local_pretrained: .cache/huggingface/hub/models--ckiplab--bert-base-chinese/snapshots/efe27bb4a9373384e0120ffe1cf327714ceb61bf
+local_files_only: true
+use_safetensors: false
+max_length: 512
+dropout: 0.1
+num_labels: 3

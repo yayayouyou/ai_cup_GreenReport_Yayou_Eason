@@ -1,0 +1,5 @@
+name: bge_m3_tapt
+type: bert_multitask
+pretrained: models/bge-m3-tapt
+max_length: 256
+dropout: 0.1

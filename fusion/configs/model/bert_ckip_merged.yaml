@@ -1,0 +1,5 @@
+name: bert_ckip_merged
+type: bert_multitask_merged
+pretrained: ckiplab/bert-base-chinese
+max_length: 256
+dropout: 0.1

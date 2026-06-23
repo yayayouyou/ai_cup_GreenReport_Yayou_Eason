@@ -1,0 +1,5 @@
+name: bert_ckip_qa
+type: bert_multitask_qa
+pretrained: ckiplab/bert-base-chinese
+max_length: 512
+dropout: 0.1

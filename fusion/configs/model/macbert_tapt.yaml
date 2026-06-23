@@ -1,0 +1,5 @@
+name: macbert_tapt
+type: bert_multitask
+pretrained: models/macbert-tapt
+max_length: 256
+dropout: 0.1

@@ -1,0 +1,9 @@
+name: baseline
+
+steps:
+  - normalize_esg_type:       # 統一多標籤順序 E;G;S
+      sort_labels: true
+  - fill_empty_esg_type:      # 空值補 "Unknown"
+      fill_value: "Unknown"
+  - normalize_timeline:       # no rename — more_than_5_years is correct per train data
+      rename: {}

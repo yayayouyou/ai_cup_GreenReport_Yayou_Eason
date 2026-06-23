@@ -1,0 +1,5 @@
+name: macbert_dapt
+type: bert_multitask
+pretrained: models/macbert-dapt
+max_length: 256
+dropout: 0.1

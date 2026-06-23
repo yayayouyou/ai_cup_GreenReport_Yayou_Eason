@@ -1,0 +1,14 @@
+name: exp006_bert_clean_esg
+model:      configs/model/bert_ckip_base.yaml
+preprocess: configs/preprocess/clean_text_esg_prefix.yaml
+data:
+  train: "data/raw/vpesg_4k_train_1000.json"
+  val_split: 0.2
+  seed: 42
+training:
+  epochs: 20
+  batch_size: 16
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+  early_stopping_patience: 5
+output_dir: experiments/exp006_bert_clean_esg

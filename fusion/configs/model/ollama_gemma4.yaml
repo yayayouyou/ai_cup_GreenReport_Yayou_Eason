@@ -1,0 +1,6 @@
+name: ollama_gemma4
+type: ollama
+
+model: gemma4:26b
+base_url: http://localhost:11434
+temperature: 0

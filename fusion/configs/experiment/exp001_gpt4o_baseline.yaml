@@ -1,0 +1,12 @@
+name: exp001_gpt4o_baseline
+description: "GPT-4o few-shot + baseline 前處理，建立分數基準"
+
+preprocess: configs/preprocess/baseline.yaml
+model:      configs/model/gpt4o_fewshot.yaml
+
+data:
+  train: data/raw/vpesg_4k_train_1000.json
+  val_split: 0.1      # 從 train 切出 10% 做 val
+  seed: 42
+
+output_dir: experiments/exp001_gpt4o_baseline

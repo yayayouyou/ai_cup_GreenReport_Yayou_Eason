@@ -1,0 +1,5 @@
+name: roberta_wwm_base
+type: bert_multitask
+pretrained: hfl/chinese-roberta-wwm-ext
+max_length: 256
+dropout: 0.1

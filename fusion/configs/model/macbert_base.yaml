@@ -1,0 +1,5 @@
+name: macbert_base
+type: bert_multitask
+pretrained: hfl/chinese-macbert-base
+max_length: 256
+dropout: 0.1

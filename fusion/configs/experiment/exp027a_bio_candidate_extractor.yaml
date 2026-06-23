@@ -1,0 +1,21 @@
+name: exp027a_bio_candidate_extractor
+model: configs/model/bert_bio_span_extractor.yaml
+preprocess: configs/preprocess/fullwidth.yaml
+data:
+  train: data/raw/vpesg_4k_train_1000.json
+  val: data/raw/vpesg4k_val_1000.json
+  val_split: 0.2
+  seed: 42
+candidate:
+  top_k: 5
+  metric_ks: [1, 3, 5]
+  hit_threshold: 0.8
+training:
+  seed: 42
+  epochs: 10
+  batch_size: 16
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+  early_stopping_patience: 3
+  early_stopping_metric: mean_subspan_recall@3
+output_dir: experiments/exp027a_bio_candidate_extractor

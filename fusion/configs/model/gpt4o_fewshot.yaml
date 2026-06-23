@@ -1,0 +1,12 @@
+name: gpt4o_fewshot
+type: llm_api
+
+model: gpt-4o
+temperature: 0
+max_tokens: 1024
+
+few_shot:
+  n_examples: 5
+  strategy: random   # random | stratified | similarity
+
+prompt_template: configs/model/prompts/gpt4o_fewshot.txt
