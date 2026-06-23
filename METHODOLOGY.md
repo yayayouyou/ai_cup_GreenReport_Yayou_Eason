@@ -1,5 +1,7 @@
 # Methodology & Experiment Log
 
+繁體中文版：[METHODOLOGY.zh-TW.md](METHODOLOGY.zh-TW.md)
+
 This documents the method that produced the final submission, plus the main experiments and
 their (often negative) outcomes. All validation below uses an **honest protocol**: models are
 fine-tuned on `train-1000` only and evaluated on the held-out official `val-1000` as a test

@@ -1,5 +1,7 @@
 # Reproduction
 
+繁體中文版：[REPRODUCE.zh-TW.md](REPRODUCE.zh-TW.md)
+
 End-to-end steps to regenerate the final submission. GPU recommended (training was done on a
 single RTX 3090). The pipeline is deterministic given the trained model checkpoints and the
 fixed configuration inputs.

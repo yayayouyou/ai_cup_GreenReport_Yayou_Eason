@@ -1,5 +1,7 @@
 # VeriPromiseESG 2026 — Traditional-Chinese ESG Promise Verification
 
+繁體中文版：[README.zh-TW.md](README.zh-TW.md)
+
 Final submission code for the AI CUP 2026 / VeriPromiseESG task.
 Authors: **yayou**, **Eason** (team).
 
