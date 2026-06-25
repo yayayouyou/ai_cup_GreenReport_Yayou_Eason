@@ -7,3 +7,6 @@ fusion/experiments/
 models/
 fusion/models/
 *.pt
+
+# Final report drafts — kept LOCAL only (contain personal contact data); never push
+FINAL_report/

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 yayou (SHIH Ya-You) and Eason (WANG Yi-Hsin) — AI CUP 2026 / TEAM_10049
 """Macro-F1 + weighted score using competition weights.
 
 Re-exports src.metrics.evaluate_hybrid and adds a thin wrapper that takes our

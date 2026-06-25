@@ -89,3 +89,17 @@ REPRODUCE.md  / REPRODUCE.zh-TW.md       逐步重現
 詳見 [METHODOLOGY.zh-TW.md](METHODOLOGY.zh-TW.md) 與 [REPRODUCE.zh-TW.md](REPRODUCE.zh-TW.md)。
 
 > Misleading 偵測(提示詞 + 模型 + 候選清單):[docs/MISLEADING.zh-TW.md](docs/MISLEADING.zh-TW.md)
+
+## 授權條款
+
+本 repository 的原始碼採 **GNU Affero 通用公共授權條款第 3 版(AGPL-3.0)** —— 一種
+**強著佐權(strong copyleft)**授權。你可以自由使用、研究、修改、散布本程式,**但任何
+衍生作品、以及任何基於本程式對外提供給使用者的網路服務,都必須同樣以 AGPL-3.0 開源,
+並提供完整的對應原始碼**(AGPL-3.0 第 13 條封住了網路 / SaaS 的漏洞)。詳見 [LICENSE](LICENSE)。
+
+**授權範圍**:本授權僅涵蓋我們撰寫的原始碼。隨附的官方 AI CUP 2026 資料集
+(`data_set/`、`fusion/data/raw/`)**不**在授權範圍內 —— 其著作權屬競賽主辦單位所有,
+僅為重現結果而附上;所引用的 Hugging Face backbone 與第三方函式庫亦各自依其原授權。
+完整範圍與著作權聲明見 [NOTICE](NOTICE)。
+
+Copyright (C) 2026 yayou(石亞右)、Eason(王翊鑫)。

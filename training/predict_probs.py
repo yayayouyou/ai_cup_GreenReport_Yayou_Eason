@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 yayou (SHIH Ya-You) and Eason (WANG Yi-Hsin) — AI CUP 2026 / TEAM_10049
 """Predict an arbitrary data file with a trained checkpoint, output the ensemble-pipeline
 format (probs_<field> softmax in EVAL_FIELDS order + pred_/conf_/gt_/id). Runs in esg-trainer."""
 import sys, json, argparse, torch

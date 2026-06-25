@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 yayou (SHIH Ya-You) and Eason (WANG Yi-Hsin) — AI CUP 2026 / TEAM_10049
 """Multi-task BERT trainer — self-contained for 3090 Docker.
 
 Train: vpesg4k_train_1000 V1.json (the full 1000-sample pool)

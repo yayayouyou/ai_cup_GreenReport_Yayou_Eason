@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 yayou (SHIH Ya-You) and Eason (WANG Yi-Hsin) — AI CUP 2026 / TEAM_10049
 """TAPT-hybrid submission builder (SAVED — reused for timeline-fix + multiseed final).
 
 SRC: promise/evidence from TAPT K-fold models, timeline/quality from ORIGINAL models.

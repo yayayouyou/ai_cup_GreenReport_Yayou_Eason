@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 yayou (SHIH Ya-You) and Eason (WANG Yi-Hsin) — AI CUP 2026 / TEAM_10049
 """TAPT — Task-Adaptive Pre-Training (Gururangan et al., ACL 2020).
 Continue masked-LM pretraining of a backbone on the ESG task corpus (train+val+test text,
 unlabeled), producing a domain-adapted backbone for downstream fine-tuning. Runs in esg-trainer.

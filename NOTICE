@@ -1,0 +1,51 @@
+GreenReport — VeriPromiseESG 2026 (Traditional-Chinese ESG Promise Verification)
+Copyright (C) 2026 yayou (SHIH Ya-You) and Eason (WANG Yi-Hsin).
+AI CUP 2026 春季賽 / VeriPromiseESG — Team TEAM_10049.
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version. See the LICENSE file for the full AGPL-3.0 terms.
+
+  Strong copyleft (AGPL-3.0). If you convey a modified version of this program,
+  you must license the whole work under the AGPL-3.0 and provide the complete
+  corresponding source code. In addition, under AGPL-3.0 Section 13, if you run
+  a modified version to offer a service to users over a network, you must give
+  those users access to the complete corresponding source code of your version.
+
+===============================================================================
+SCOPE — what this license does and does NOT cover
+===============================================================================
+
+COVERED: the source code authored by the team in this repository — e.g.
+`pipeline/`, `training/`, the `fusion/` source/scripts/configs, and the
+documentation we wrote (README, METHODOLOGY, REPRODUCE, docs/).
+
+NOT covered by this license, and NOT ours to relicense:
+
+1. Competition dataset.
+   The official AI CUP 2026 / VeriPromiseESG dataset bundled here under
+   `data_set/` and `fusion/data/raw/` is the property of the AI CUP 2026
+   organizers. It is included solely to allow reproduction of our results and
+   remains subject to the competition's own data-use terms. Nothing in the
+   AGPL-3.0 grants any right to redistribute or reuse that dataset.
+
+2. Pretrained models (referenced, not redistributed).
+   Backbone models are downloaded from Hugging Face at run time and are each
+   governed by their own upstream licenses; no model weights are bundled here:
+     - ckiplab/bert-base-chinese
+     - hfl/chinese-macbert-base
+     - hfl/chinese-roberta-wwm-ext
+     - BAAI/bge-m3
+
+3. Third-party libraries (PyTorch, transformers, scikit-learn, scipy, numpy,
+   PyYAML, and others) remain under their respective licenses.
+
+External LLM services (e.g. OpenRouter-hosted models, Anthropic Claude) were
+used only as development-time tools; they are not part of this source code and
+impose no license on it. No API keys are stored in this repository.
+
+===============================================================================
+Note: This is a jointly authored team project. The `fusion/` directory is
+team-shared code. Copyright is held jointly by the team members named above.
+===============================================================================

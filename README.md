@@ -97,3 +97,20 @@ All techniques are standard published methods, reimplemented here:
 See [METHODOLOGY.md](METHODOLOGY.md) for the full method and [REPRODUCE.md](REPRODUCE.md) to run it.
 
 > Misleading detection (prompt + models + candidate list): [docs/MISLEADING.md](docs/MISLEADING.md)
+
+## License
+
+The source code in this repository is licensed under the **GNU Affero General Public
+License v3.0 (AGPL-3.0)** — a strong copyleft license. You are free to use, study,
+modify, and share this code, **but any derivative work — and any service you build on
+it that is offered to users over a network — must also be released as open source
+under the AGPL-3.0, with complete corresponding source code made available**
+(AGPL-3.0 §13 closes the network/SaaS loophole). See [LICENSE](LICENSE).
+
+**Scope.** The license covers our source code only. The bundled official AI CUP 2026
+dataset (`data_set/`, `fusion/data/raw/`) is **not** covered — it belongs to the
+competition organizers and is included solely for reproducibility. Referenced
+Hugging Face backbones and third-party libraries remain under their own licenses.
+Full scope and copyright in [NOTICE](NOTICE).
+
+Copyright (C) 2026 yayou (SHIH Ya-You) and Eason (WANG Yi-Hsin).

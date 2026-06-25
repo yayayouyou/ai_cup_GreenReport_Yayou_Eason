@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 yayou (SHIH Ya-You) and Eason (WANG Yi-Hsin) — AI CUP 2026 / TEAM_10049
 """Realigned test submission — tune to the REAL (N/A-excluded) metric, optionally drop rules/prior.
 
 vs predict_test_submission.py the only changes are:
