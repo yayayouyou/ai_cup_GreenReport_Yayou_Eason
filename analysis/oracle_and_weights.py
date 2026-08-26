@@ -64,12 +64,12 @@ def fmt(tag, tot, f):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--val', default='../data_set/vpesg4k_val_1000.json')
-    ap.add_argument('--pipeline_val', default='out/val_preds_Q0like.json')
+    ap.add_argument('--pipeline_val', default='io/val_strong4.json')
     ap.add_argument('--out', default='out/oracle_weights.json')
     args = ap.parse_args()
 
-    rows_all = json.load(open(args.val))
-    pipeline_by = {str(x['id']): x for x in json.load(open(args.pipeline_val))}
+    rows_all = json.load(open(args.val, encoding='utf-8'))
+    pipeline_by = {str(x['id']): x for x in json.load(open(args.pipeline_val, encoding='utf-8'))}
     rows = [r for r in rows_all if str(r['id']) in pipeline_by]
     N = len(rows)
     res = {}
@@ -256,11 +256,11 @@ def main():
         tot, _, _ = score_all(rows, preds)
         v = (tot - base_S) / len(mis_rows) * 1e4
         price['ONE true Misleading caught'] = {'points_per_error_x1e4': v, 'n_available': len(mis_rows)}
-        print(f"  {'ONE true Misleading caught':38s} {v:8.2f}   (n={len(mis_rows)} on val — support-1 class!)")
+        print(f"  {'ONE true Misleading caught':38s} {v:8.2f}   (n={len(mis_rows)} on val -- support-1 class!)")
     res['price_list'] = price
 
-    json.dump(res, open(args.out, 'w'), ensure_ascii=False, indent=1)
-    print(f"\n✅ {args.out}")
+    json.dump(res, open(args.out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f"\nwrote {args.out}")
 
 
 if __name__ == '__main__':

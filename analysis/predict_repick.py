@@ -75,13 +75,13 @@ def fit_T(pl,yi):
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument('--val',default='data_set/vpesg4k_val_1000.json')
+    ap.add_argument('--val',default='../data_set/vpesg4k_val_1000.json')
     ap.add_argument('--val_pred_dir',default='/tmp/val_io')
     ap.add_argument('--test',default='data_set/vpesg4k_test_2000.json')
     ap.add_argument('--test_pred_dir',default='/tmp/test_io')
-    ap.add_argument('--val_spans',default='data_set/claude_spans/val_spans_raw.json')
-    ap.add_argument('--test_spans',default='data_set/claude_spans/test_spans_raw.json')
-    ap.add_argument('--priors',default='pipeline/evaluation/rules/esg_type_priors.json')
+    ap.add_argument('--val_spans',default='../data_set/claude_spans/val_spans_raw.json')
+    ap.add_argument('--test_spans',default='../data_set/claude_spans/test_spans_raw.json')
+    ap.add_argument('--priors',default='../pipeline/rules/esg_type_priors.json')
     ap.add_argument('--out',required=True)
     ap.add_argument('--rules',action='store_true'); ap.add_argument('--prior',action='store_true')
     ap.add_argument('--bestsrc',action='store_true')
@@ -92,20 +92,20 @@ def main():
     ap.add_argument('--gate_tau',type=float,default=0.1,help='override evidence with LLM where evidence margin<tau')
     ap.add_argument('--dump_val_preds',default=None,help='also write assembled val predictions (for cascade-model fitting)')
     args=ap.parse_args()
-    gate_val={str(x['id']):x for x in json.load(open(args.gate_votes_val))} if args.gate_votes_val else {}
-    gate_test={str(x['id']):x for x in json.load(open(args.gate_votes_test))} if args.gate_votes_test else {}
+    gate_val={str(x['id']):x for x in json.load(open(args.gate_votes_val, encoding='utf-8'))} if args.gate_votes_val else {}
+    gate_test={str(x['id']):x for x in json.load(open(args.gate_votes_test, encoding='utf-8'))} if args.gate_votes_test else {}
     LAB=lambda f:(SCORED[f] if args.metric=='real' else LABELS[f])
 
-    val=json.load(open(args.val)); test=json.load(open(args.test))
+    val=json.load(open(args.val, encoding='utf-8')); test=json.load(open(args.test, encoding='utf-8'))
     val_by={str(v['id']):v for v in val}; test_by={str(t['id']):t for t in test}
-    priors=json.load(open(args.priors))
-    val_spans={x['id']:x for x in json.load(open(args.val_spans))}
-    test_spans={x['id']:x for x in json.load(open(args.test_spans))}
+    priors=json.load(open(args.priors, encoding='utf-8'))
+    val_spans={x['id']:x for x in json.load(open(args.val_spans, encoding='utf-8'))}
+    test_spans={x['id']:x for x in json.load(open(args.test_spans, encoding='utf-8'))}
     def span_view(r,spans):
         rr=dict(r); cs=spans.get(str(r['id']),{})
         rr['promise_string']=(cs.get('promise_string') or '').strip(); rr['evidence_string']=(cs.get('evidence_string') or '').strip(); return rr
     def load(base,fname):
-        return {n:{str(p['id']):p for p in json.load(open(f"{base}/bert_{n}/{fname}"))} for n in BERT_NAMES}
+        return {n:{str(p['id']):p for p in json.load(open(f"{base}/bert_{n}/{fname}", encoding='utf-8'))} for n in BERT_NAMES}
     val_preds=load(args.val_pred_dir,'predictions_with_conf.json')
     test_preds=load(args.test_pred_dir,'predictions_test.json')
     val_ids=[str(v['id']) for v in val if all(str(v['id']) in d for d in val_preds.values())]
@@ -217,8 +217,8 @@ def main():
         print(f">> GATE val WF1={g:.4f} ({g-tot:+.4f})  E={gd['evidence_status']:.3f} (base {d['evidence_status']:.3f})  [tau={args.gate_tau}]")
     if args.dump_val_preds:
         vout=[{'id':s,**assemble(s,calib_val,rules_val,main_type(val_by[s].get('esg_type')),bt,offsets)} for s in val_ids]
-        json.dump(vout,open(args.dump_val_preds,'w'),ensure_ascii=False,indent=1)
-        print(f"✅ val preds {len(vout)} → {args.dump_val_preds}")
+        json.dump(vout,open(args.dump_val_preds,'w', encoding='utf-8'),ensure_ascii=False,indent=1)
+        print(f"wrote val preds {len(vout)} -> {args.dump_val_preds}")
     out=[]
     for tr in test:
         sid=str(tr['id'])
@@ -226,7 +226,7 @@ def main():
         out.append({'id':tr['id'],**picks,
                     'promise_string':(test_spans.get(sid,{}).get('promise_string') or ''),
                     'evidence_string':(test_spans.get(sid,{}).get('evidence_string') or '')})
-    json.dump(out,open(args.out,'w'),ensure_ascii=False,indent=2)
-    print(f"✅ {len(out)} → {args.out}")
+    json.dump(out,open(args.out,'w', encoding='utf-8'),ensure_ascii=False,indent=2)
+    print(f"wrote {len(out)} -> {args.out}")
 
 if __name__=='__main__': main()

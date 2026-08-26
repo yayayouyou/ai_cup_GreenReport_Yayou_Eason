@@ -277,14 +277,14 @@ def rebuild_fields(p, gamma_mode='class'):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--val', default='data_set/vpesg4k_val_1000.json')
+    ap.add_argument('--val', default='../data_set/vpesg4k_val_1000.json')
     ap.add_argument('--pred', required=True, help='val predictions json: list of {id, 4 fields}')
-    ap.add_argument('--out', default='paper/out/cascade_params.json')
+    ap.add_argument('--out', default='out/cascade_params.json')
     ap.add_argument('--label', default='pipeline')
     args = ap.parse_args()
 
-    rows = json.load(open(args.val))
-    preds = json.load(open(args.pred))
+    rows = json.load(open(args.val, encoding='utf-8'))
+    preds = json.load(open(args.pred, encoding='utf-8'))
     pred_by = {str(x['id']): x for x in preds}
     rows = [r for r in rows if str(r['id']) in pred_by]
 
@@ -310,7 +310,7 @@ def main():
     for mode in ['const', 'class']:
         tot_m, fld_m, _ = rebuild_fields(p, gamma_mode=mode)
         name = 'v1 (gamma const)' if mode == 'const' else 'v2 (gamma_c measured)'
-        print(f"{name:24s} WF1={tot_m:.4f} (Δ{tot_m-total:+.4f})  "
+        print(f"{name:24s} WF1={tot_m:.4f} (d{tot_m-total:+.4f})  "
               f"P={fld_m['promise_status']:.4f}(Δ{fld_m['promise_status']-fields['promise_status']:+.4f}) "
               f"E={fld_m['evidence_status']:.4f}(Δ{fld_m['evidence_status']-fields['evidence_status']:+.4f}) "
               f"T={fld_m['verification_timeline']:.4f}(Δ{fld_m['verification_timeline']-fields['verification_timeline']:+.4f}) "
@@ -319,8 +319,8 @@ def main():
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     out = {'label': args.label, 'direct': {'total': total, 'fields': fields, 'per_class': per_class},
            'params': p}
-    json.dump(out, open(args.out, 'w'), ensure_ascii=False, indent=1)
-    print(f"\n✅ params → {args.out}")
+    json.dump(out, open(args.out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f"\nwrote params -> {args.out}")
 
 
 if __name__ == '__main__':

@@ -64,16 +64,16 @@ def percentile(xs, q):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--val', default='../data_set/vpesg4k_val_1000.json')
-    ap.add_argument('--pipeline_val', default='out/val_preds_Q0like.json')
-    ap.add_argument('--sources', default='io/eason_valeval')
+    ap.add_argument('--pipeline_val', default='io/val_strong4.json')
+    ap.add_argument('--sources', default='io/binary_sources')
     ap.add_argument('--B', type=int, default=10000)
     ap.add_argument('--out', default='out/bootstrap.json')
     ap.add_argument('--seed', type=int, default=20260805)
     args = ap.parse_args()
     rng = random.Random(args.seed)
 
-    rows_all = json.load(open(args.val))
-    pipeline_by = {str(x['id']): x for x in json.load(open(args.pipeline_val))}
+    rows_all = json.load(open(args.val, encoding='utf-8'))
+    pipeline_by = {str(x['id']): x for x in json.load(open(args.pipeline_val, encoding='utf-8'))}
     rows = [r for r in rows_all if str(r['id']) in pipeline_by]
     N = len(rows)
     res = {}
@@ -201,7 +201,7 @@ def main():
         lo, hi = ci(diffs)
         p = 2 * min(sum(1 for d in diffs if d <= 0), sum(1 for d in diffs if d >= 0)) / len(diffs)
         pair['strong4 vs diluted7'] = {'obs': sa - sb, 'ci': [lo, hi], 'p': p}
-        print(f"  strong4 ({sa:.4f}) vs diluted7 ({sb:.4f}): Δ={sa-sb:+.4f}  "
+        print(f"  strong4 ({sa:.4f}) vs diluted7 ({sb:.4f}): d={sa-sb:+.4f}  "
               f"95% CI [{lo:+.4f}, {hi:+.4f}]  p={p:.4f}")
     res['paired'] = pair
 
@@ -226,7 +226,7 @@ def main():
           f"max {absg[-1]:.4f}  (SD of signed gap {sd:.4f})")
     for f in FIELDS:
         a = sorted(abs(g) for g in gaps_f[f])
-        print(f"      {f:24s} median |Δ| {percentile(a,.5):.4f}   90th {percentile(a,.9):.4f}")
+        print(f"      {f:24s} median |d| {percentile(a,.5):.4f}   90th {percentile(a,.9):.4f}")
     res['partition'] = {'median_abs': percentile(absg, .5), 'p90_abs': percentile(absg, .9),
                         'max_abs': absg[-1], 'sd': sd,
                         'fields': {f: {'median_abs': percentile(sorted(abs(g) for g in gaps_f[f]), .5),
@@ -266,7 +266,7 @@ def main():
         seed_stats[base] = {'n': len(xs), 'mean': mu, 'sd': sd_,
                             'min': min(xs), 'max': max(xs),
                             'members': {nm: v for nm, v in vals}}
-        print(f"  {base:22s} n={len(xs)}  mean {mu:.4f} ± {sd_:.4f}  "
+        print(f"  {base:22s} n={len(xs)}  mean {mu:.4f} +/- {sd_:.4f}  "
               f"range [{min(xs):.4f}, {max(xs):.4f}]  spread {max(xs)-min(xs):.4f}")
     if seed_stats:
         pooled = (sum(v['sd'] ** 2 * (v['n'] - 1) for v in seed_stats.values())
@@ -279,8 +279,8 @@ def main():
                        'ci_half_width_cluster': clus_hw,
                        'resolution_ratio': clus_hw / pooled}
 
-    json.dump(res, open(args.out, 'w'), ensure_ascii=False, indent=1)
-    print(f"\n✅ {args.out}")
+    json.dump(res, open(args.out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f"\nwrote {args.out}")
 
 
 if __name__ == '__main__':

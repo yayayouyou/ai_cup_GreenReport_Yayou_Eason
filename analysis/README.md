@@ -50,6 +50,7 @@ system's validation output, and every parameter in the paper is counted on it.
 | §7.1 | the convention's price, `−0.0265` | `metric_design_ablation.py` | `out/metric_design.json` |
 | §7.1 | seed SD `0.0055`, roster gap `0.0013` | `bootstrap_apparatus.py` | `out/bootstrap.json` |
 | §3.3 | bootstrap misses a support-1 class, `(1−1/N)^N` | `bootstrap_apparatus.py` | `out/bootstrap.json` → `degenerate` |
+| §3.3 | ML-Promise `42` of `2,110` (`2.0%`), `30` of them promise=No with real quality, `1` *Misleading* | `metric_design_ablation.py` | `out/metric_design.json` → `mlpromise_transferable` |
 | §4.3 | the compliance repick | `predict_repick.py` | — |
 | §4.1–4.2 | the cascade model itself (v1 / v2, forward simulation) | `cascade_model.py` | — |
 
@@ -59,6 +60,10 @@ paper; the script is kept because the numbers behind it are in `out/binary_swap.
 ---
 
 ## Running it
+
+Run these from inside `analysis/`. Python 3.10+, `numpy` and `scikit-learn` are all that is
+needed; `make_figures.py` also wants `matplotlib`. **Every flag below is now the default**, so each
+script also runs bare — `python oracle_and_weights.py` — and rewrites its own file under `out/`.
 
 ```bash
 python oracle_and_weights.py \
@@ -78,18 +83,41 @@ python bootstrap_apparatus.py --B 10000 \
     --out out/bootstrap.json
 ```
 
-Paths in the scripts default to the layout of the working tree they were written in; pass the
-flags above explicitly.
+```bash
+python validation_ladder.py     --val ../data_set/vpesg4k_val_1000.json     --pipeline_val io/val_strong4.json     --out out/validation_ladder.json
+
+python metric_design_ablation.py     --val ../data_set/vpesg4k_val_1000.json     --pipeline_val io/val_strong4.json     --sources io/binary_sources     --out out/metric_design.json
+```
+
+Re-running all four rewrites `out/` with values identical to what is committed here.
+
+**One external corpus is not ours to redistribute.** The cross-corpus check in
+`metric_design_ablation.py` reads ML-Promise (SemEval-2025 Task 6) as
+`Trainset_<Language>.json` under `--ext_dir`. Without it the script still runs and still produces
+everything else; it prints that it is skipping that section. The counts it would produce are
+already recorded in `out/metric_design.json` under `schema` and `mlpromise_transferable`.
+
+Note that the paper reports **42** violations and the `rule1_violations` column sums to **45**. Both
+are printed. ML-Promise scores evidence Yes/No with no N/A class, so R1's evidence clause cannot
+transfer to it; restricting R1 to quality and timeline — the fields both schemas share — gives 38,
+plus 4 R2 violations, which is the 42 the paper uses.
 
 ---
 
-## Two things to know before reading the outputs
+## Three things to know before reading the outputs
 
 **The scorer.** Every number uses the official convention: macro-F1 per field over a **fixed**
 class set, weighted `0.20 / 0.30 / 0.35 / 0.15`. N/A is a scored class in *evidence* and is
 excluded from the averages of *quality* and *timeline*. Calling a library default instead moves
 the composite by `−0.0265` on validation and `+0.0242` on test — that is §7.1's whole subject, so
 it is not a detail.
+
+**What a "price" is.** The `price_list` rows are **not** derivatives. Each is the mean total-score
+gain from flipping *all* `n` offending rows to gold and dividing by `n` — a finite repair, so a row
+times its own `n` is exact, while sums *across* rows are first-order only, because the repairs
+interact. The two promise rows also carry the gold **evidence** onto the repaired row, so
+`promise FN` prices a promise-plus-evidence repair: with the model's own evidence kept instead it
+is `6.30e-4` rather than `8.46e-4`. The paper's Table 3 caption says so.
 
 **One defect of ours is in here.** The three data-only rules guard on `promise_status`, a field
 the validation file carries and the test file does not, so the same code was a different function

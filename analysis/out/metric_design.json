@@ -1,4 +1,11 @@
 {
+ "mlpromise_transferable": {
+  "n": 2110,
+  "violations": 42,
+  "rate": 0.01990521327014218,
+  "promise_no_with_real_quality": 30,
+  "promise_no_with_misleading": 1
+ },
  "schema": [
   {
    "corpus": "AI CUP zh (train-1000)",
@@ -6,6 +13,10 @@
    "promise_no": 186,
    "rule1_violations": 0,
    "rule1_rate": 0.0,
+   "rule1_violations_transferable": 0,
+   "transferable_violations": 0,
+   "promise_no_with_real_quality": 0,
+   "promise_no_with_misleading": 0,
    "evidence_no_or_na": 323,
    "rule2_violations": 0,
    "violation_kinds": {}
@@ -16,6 +27,10 @@
    "promise_no": 187,
    "rule1_violations": 0,
    "rule1_rate": 0.0,
+   "rule1_violations_transferable": 0,
+   "transferable_violations": 0,
+   "promise_no_with_real_quality": 0,
+   "promise_no_with_misleading": 0,
    "evidence_no_or_na": 332,
    "rule2_violations": 0,
    "violation_kinds": {}
@@ -26,6 +41,10 @@
    "promise_no": 264,
    "rule1_violations": 14,
    "rule1_rate": 0.05303030303030303,
+   "rule1_violations_transferable": 11,
+   "transferable_violations": 12,
+   "promise_no_with_real_quality": 3,
+   "promise_no_with_misleading": 1,
    "evidence_no_or_na": 332,
    "rule2_violations": 1,
    "violation_kinds": {
@@ -42,6 +61,10 @@
    "promise_no": 87,
    "rule1_violations": 0,
    "rule1_rate": 0.0,
+   "rule1_violations_transferable": 0,
+   "transferable_violations": 0,
+   "promise_no_with_real_quality": 0,
+   "promise_no_with_misleading": 0,
    "evidence_no_or_na": 179,
    "rule2_violations": 0,
    "violation_kinds": {}
@@ -52,6 +75,10 @@
    "promise_no": 81,
    "rule1_violations": 0,
    "rule1_rate": 0.0,
+   "rule1_violations_transferable": 0,
+   "transferable_violations": 0,
+   "promise_no_with_real_quality": 0,
+   "promise_no_with_misleading": 0,
    "evidence_no_or_na": 129,
    "rule2_violations": 0,
    "violation_kinds": {}
@@ -62,6 +89,10 @@
    "promise_no": 41,
    "rule1_violations": 0,
    "rule1_rate": 0.0,
+   "rule1_violations_transferable": 0,
+   "transferable_violations": 3,
+   "promise_no_with_real_quality": 0,
+   "promise_no_with_misleading": 0,
    "evidence_no_or_na": 123,
    "rule2_violations": 3,
    "violation_kinds": {}
@@ -72,6 +103,10 @@
    "promise_no": 121,
    "rule1_violations": 27,
    "rule1_rate": 0.2231404958677686,
+   "rule1_violations_transferable": 27,
+   "transferable_violations": 27,
+   "promise_no_with_real_quality": 27,
+   "promise_no_with_misleading": 0,
    "evidence_no_or_na": 122,
    "rule2_violations": 0,
    "violation_kinds": {

@@ -55,7 +55,7 @@ def score(rows, pred_by, mode):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--val', default='../data_set/vpesg4k_val_1000.json')
-    ap.add_argument('--pipeline_val', default='out/val_preds_Q0like.json')
+    ap.add_argument('--pipeline_val', default='io/val_strong4.json')
     ap.add_argument('--splits', type=int, default=5)
     ap.add_argument('--repeats', type=int, default=200)
     ap.add_argument('--seed', type=int, default=20260805)
@@ -63,12 +63,12 @@ def main():
     args = ap.parse_args()
     rng = random.Random(args.seed)
 
-    rows_all = json.load(open(args.val))
-    pred_by = {str(x['id']): x for x in json.load(open(args.pipeline_val))}
+    rows_all = json.load(open(args.val, encoding='utf-8'))
+    pred_by = {str(x['id']): x for x in json.load(open(args.pipeline_val, encoding='utf-8'))}
     rows = [r for r in rows_all if str(r['id']) in pred_by]
     N = len(rows)
 
-    print("=== VALIDATION LADDER — identical predictions, four scoring conventions ===")
+    print("=== VALIDATION LADDER -- identical predictions, four scoring conventions ===")
     print(f"    one fixed configuration, n={N}; only the scorer changes\n")
 
     res = {}
@@ -88,7 +88,7 @@ def main():
         mu = sum(vals) / len(vals)
         sd = (sum((v - mu) ** 2 for v in vals) / (len(vals) - 1)) ** .5
         res[mode] = {'mean': mu, 'sd': sd, 'rare_class_absent_rate': absent / args.repeats}
-        print(f"{label}\n      {mu:.4f} ± {sd:.4f}   "
+        print(f"{label}\n      {mu:.4f} +/- {sd:.4f}   "
               f"(the support-1 class is absent from {100*absent/args.repeats:.0f}% of held-out slices)")
 
     for mode, label in [('proxy',    'R2  full val, fixed label set, N/A scored (proxy metric)'),
@@ -111,8 +111,8 @@ def main():
     res['decomposition'] = {'label_set': r1 - r0, 'subsampling': r2 - r1,
                             'proxy_vs_official': r3 - r2, 'total': r3 - r0}
 
-    json.dump(res, open(args.out, 'w'), ensure_ascii=False, indent=1)
-    print(f"\n✅ {args.out}")
+    json.dump(res, open(args.out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f"\nwrote {args.out}")
 
 
 if __name__ == '__main__':

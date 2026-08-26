@@ -16,13 +16,13 @@ import matplotlib.pyplot as plt
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--swap', default='out/binary_swap.json')
-    ap.add_argument('--outdir', default='tex/fig')
+    ap.add_argument('--outdir', default='out/fig')
     ap.add_argument('--sigma', type=float, default=0.0054,
                     help='pooled within-family seed SD (bootstrap_apparatus.py)')
     args = ap.parse_args()
     os.makedirs(args.outdir, exist_ok=True)
 
-    rows = json.load(open(args.swap))['results']
+    rows = json.load(open(args.swap, encoding='utf-8'))['results']
     ref = next(r for r in rows if r['source'] == 'PIPELINE(self)' and r['mode'] == 'class')
 
     fig, axes = plt.subplots(1, 2, figsize=(7.0, 3.1), sharex=False)
@@ -62,7 +62,7 @@ def main():
     fig.tight_layout()
     out = os.path.join(args.outdir, 'predicted_vs_observed.pdf')
     fig.savefig(out, bbox_inches='tight')
-    print(f'✅ {out}')
+    print(f'wrote {out}')
 
 
 if __name__ == '__main__':

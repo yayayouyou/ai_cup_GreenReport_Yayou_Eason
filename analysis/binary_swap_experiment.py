@@ -235,7 +235,7 @@ def load_sources(src_dir):
         hits = glob.glob(os.path.join(d, '*', 'val_predictions.json'))
         if not hits:
             continue
-        preds = json.load(open(sorted(hits)[-1]))
+        preds = json.load(open(sorted(hits)[-1], encoding='utf-8'))
         out[os.path.basename(d).replace('valeval_', '')] = {str(x['id']): x for x in preds}
     return out
 
@@ -261,14 +261,14 @@ def vote(sources, names):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--val', default='data_set/vpesg4k_val_1000.json')
-    ap.add_argument('--pipeline_val', default='paper/out/val_preds_Q0like.json')
-    ap.add_argument('--sources', default='paper/io/eason_valeval')
-    ap.add_argument('--out', default='paper/out/binary_swap.json')
+    ap.add_argument('--val', default='../data_set/vpesg4k_val_1000.json')
+    ap.add_argument('--pipeline_val', default='io/val_strong4.json')
+    ap.add_argument('--sources', default='io/binary_sources')
+    ap.add_argument('--out', default='out/binary_swap.json')
     args = ap.parse_args()
 
-    rows_all = json.load(open(args.val))
-    pipeline_by = {str(x['id']): x for x in json.load(open(args.pipeline_val))}
+    rows_all = json.load(open(args.val, encoding='utf-8'))
+    pipeline_by = {str(x['id']): x for x in json.load(open(args.pipeline_val, encoding='utf-8'))}
     rows = [r for r in rows_all if str(r['id']) in pipeline_by]
 
     sources = load_sources(args.sources)
@@ -316,8 +316,8 @@ def main():
         mae = {k: sum(abs(x) for x in v) / len(v) for k, v in errs[mode].items()}
         print(f"gamma={mode:5s} (n={n}): MAE timeline {mae['T']:.4f}  quality {mae['Q']:.4f}  total {mae['S']:.4f}")
 
-    json.dump({'downstream': down, 'results': results}, open(args.out, 'w'), ensure_ascii=False, indent=1)
-    print(f"\n✅ {args.out}")
+    json.dump({'downstream': down, 'results': results}, open(args.out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f"\nwrote {args.out}")
 
 
 if __name__ == '__main__':
