@@ -1,0 +1,36 @@
+{
+ "dynamic": {
+  "mean": 0.6359783586363417,
+  "sd": 0.024136729538659148,
+  "rare_class_absent_rate": 0.775
+ },
+ "proxy": {
+  "mean": 0.6301924560658408,
+  "sd": 0.025155034230103148,
+  "rare_class_absent_rate": 0.855
+ },
+ "proxy_full": {
+  "total": 0.6354613150428271,
+  "fields": {
+   "promise_status": 0.8148019538393869,
+   "evidence_status": 0.7082786471925763,
+   "evidence_quality": 0.45754548606019263,
+   "verification_timeline": 0.6658427333073963
+  }
+ },
+ "official_full": {
+  "total": 0.6094658044627806,
+  "fields": {
+   "promise_status": 0.8148019538393869,
+   "evidence_status": 0.7082786471925763,
+   "evidence_quality": 0.3854617175989734,
+   "verification_timeline": 0.660734789183265
+  }
+ },
+ "decomposition": {
+  "label_set": -0.005785902570500823,
+  "subsampling": 0.005268858976986257,
+  "proxy_vs_official": -0.025995510580046455,
+  "total": -0.02651255417356102
+ }
+}

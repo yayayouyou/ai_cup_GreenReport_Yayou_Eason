@@ -1,0 +1,105 @@
+{
+ "B  deployed (model gate, model scored)": {
+  "total": 0.6094658044627806,
+  "fields": {
+   "promise_status": 0.8148019538393869,
+   "evidence_status": 0.7082786471925763,
+   "evidence_quality": 0.3854617175989734,
+   "verification_timeline": 0.660734789183265
+  }
+ },
+ "O_P gold promise only": {
+  "total": 0.6864172273134999,
+  "fields": {
+   "promise_status": 1.0,
+   "evidence_status": 0.8067424174149322,
+   "evidence_quality": 0.40235099014730275,
+   "verification_timeline": 0.6904777035830951
+  }
+ },
+ "O_E gold evidence only": {
+  "total": 0.676058084184782,
+  "fields": {
+   "promise_status": 0.8148019538393869,
+   "evidence_status": 0.8708245784484175,
+   "evidence_quality": 0.43640029001397024,
+   "verification_timeline": 0.660734789183265
+  }
+ },
+ "O_PE gold promise + evidence": {
+  "total": 0.7659703395081893,
+  "fields": {
+   "promise_status": 1.0,
+   "evidence_status": 1.0,
+   "evidence_quality": 0.4639962399163573,
+   "verification_timeline": 0.6904777035830951
+  }
+ },
+ "headroom": {
+  "total": 0.15650453504540862,
+  "direct": 0.12455601507434974,
+  "cascade": 0.03194851997105888,
+  "cascade_share": 0.20413798208332593
+ },
+ "rescue": {
+  "timeline": {
+   "open": 0.6670838548185232,
+   "rescued": 0.6428571428571429,
+   "n_open": 799,
+   "n_rescued": 14
+  },
+  "quality": {
+   "open": 0.839171974522293,
+   "rescued": 0.675,
+   "n_open": 628,
+   "n_rescued": 40
+  }
+ },
+ "effective_weight": {
+  "via_recall": 0.5215986043937832,
+  "via_specificity": 0.42682609765359886,
+  "components": {
+   "promise_status": 0.23304772020186215,
+   "evidence_status": 0.2575432108623099,
+   "evidence_quality": 0.07201235922449506,
+   "verification_timeline": 0.045183537783533005
+  },
+  "share_outside": 0.6165633912451653,
+  "rho": 0.982779827798278,
+  "phi": 0.4385026737967914
+ },
+ "price_list": {
+  "promise FN (gold Yes, pred No)": {
+   "points_per_error_x1e4": 8.455445795390514,
+   "n_available": 14
+  },
+  "  ...on a within_2_years item": {
+   "points_per_error_x1e4": null,
+   "n_available": 0
+  },
+  "  ...on an already item": {
+   "points_per_error_x1e4": 7.896129512605407,
+   "n_available": 9
+  },
+  "promise FP (gold No, pred Yes)": {
+   "points_per_error_x1e4": 8.78210489934425,
+   "n_available": 82
+  },
+  "evidence error (gate already open)": {
+   "points_per_error_x1e4": 6.6128058420845095,
+   "n_available": 106
+  },
+  "timeline conditional fix (all)": {
+   "points_per_error_x1e4": 1.6622442738450842,
+   "n_available": 266
+  },
+  "quality conditional fix (all)": {
+   "points_per_error_x1e4": 7.040537672547909,
+   "n_available": 101
+  },
+  "ONE true Misleading caught": {
+   "points_per_error_x1e4": 63.873059605761284,
+   "n_available": 1
+  }
+ }
+}

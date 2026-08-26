@@ -1,0 +1,189 @@
+{
+ "label": "pipeline",
+ "direct": {
+  "total": 0.6094658044627806,
+  "fields": {
+   "promise_status": 0.8148019538393869,
+   "evidence_status": 0.7082786471925763,
+   "evidence_quality": 0.3854617175989734,
+   "verification_timeline": 0.660734789183265
+  },
+  "per_class": {
+   "promise_status": {
+    "Yes": 0.9433293978748524,
+    "No": 0.6862745098039216
+   },
+   "evidence_status": {
+    "Yes": 0.8728283530229326,
+    "No": 0.5439330543933054,
+    "N/A": 0.7080745341614907
+   },
+   "evidence_quality": {
+    "Clear": 0.8261964735516373,
+    "Not Clear": 0.330188679245283,
+    "Misleading": 0.0
+   },
+   "verification_timeline": {
+    "already": 0.6270967741935484,
+    "within_2_years": 0.75,
+    "between_2_and_5_years": 0.5954198473282443,
+    "more_than_5_years": 0.6704225352112676
+   }
+  }
+ },
+ "params": {
+  "rho": 0.982779827798278,
+  "phi": 0.4385026737967914,
+  "gamma_T": {
+   "already": 0.9744318181818182,
+   "within_2_years": 1.0,
+   "between_2_and_5_years": 0.9846153846153847,
+   "more_than_5_years": 0.9944444444444445
+  },
+  "gamma_Q": {
+   "Clear": 0.9593639575971732,
+   "Not Clear": 0.8316831683168316,
+   "Misleading": 1.0
+  },
+  "M_evidence": {
+   "Yes": {
+    "Yes": 0.9573170731707317,
+    "No": 0.0350609756097561,
+    "N/A": 0.007621951219512195
+   },
+   "No": {
+    "Yes": 0.5314685314685315,
+    "No": 0.45454545454545453,
+    "N/A": 0.013986013986013986
+   },
+   "N/A": {
+    "Yes": 0.8170731707317073,
+    "No": 0.07317073170731707,
+    "N/A": 0.10975609756097561
+   }
+  },
+  "gamma_E": {
+   "Yes": 0.9820359281437125,
+   "No": 0.9862068965517241,
+   "N/A": 0.4385026737967914
+  },
+  "eYY": 0.9573170731707317,
+  "eNN": 0.45454545454545453,
+  "qy": 0.8170731707317073,
+  "M_timeline": {
+   "already": {
+    "already": 0.7084548104956269,
+    "within_2_years": 0.0029154518950437317,
+    "between_2_and_5_years": 0.18658892128279883,
+    "more_than_5_years": 0.10204081632653061,
+    "N/A": 0.0
+   },
+   "within_2_years": {
+    "already": 0.19047619047619047,
+    "within_2_years": 0.7142857142857143,
+    "between_2_and_5_years": 0.09523809523809523,
+    "more_than_5_years": 0.0,
+    "N/A": 0.0
+   },
+   "between_2_and_5_years": {
+    "already": 0.34375,
+    "within_2_years": 0.0078125,
+    "between_2_and_5_years": 0.609375,
+    "more_than_5_years": 0.0390625,
+    "N/A": 0.0
+   },
+   "more_than_5_years": {
+    "already": 0.19553072625698323,
+    "within_2_years": 0.0,
+    "between_2_and_5_years": 0.13966480446927373,
+    "more_than_5_years": 0.664804469273743,
+    "N/A": 0.0
+   }
+  },
+  "M_quality": {
+   "Clear": {
+    "Clear": 0.9060773480662984,
+    "Not Clear": 0.06998158379373849,
+    "Misleading": 0.02394106813996317,
+    "N/A": 0.0
+   },
+   "Not Clear": {
+    "Clear": 0.5238095238095238,
+    "Not Clear": 0.4166666666666667,
+    "Misleading": 0.05952380952380952,
+    "N/A": 0.0
+   },
+   "Misleading": {
+    "Clear": 1.0,
+    "Not Clear": 0.0,
+    "Misleading": 0.0,
+    "N/A": 0.0
+   }
+  },
+  "u_timeline": {
+   "already": 0.6463414634146342,
+   "within_2_years": 0.012195121951219513,
+   "between_2_and_5_years": 0.2073170731707317,
+   "more_than_5_years": 0.13414634146341464
+  },
+  "V_quality": {
+   "Clear": 0.6153846153846154,
+   "Not Clear": 0.26573426573426573,
+   "Misleading": 0.11888111888111888
+  },
+  "label_dist": {
+   "promise_status": {
+    "No": 0.187,
+    "Yes": 0.813
+   },
+   "evidence_status": {
+    "N/A": 0.187,
+    "No": 0.145,
+    "Yes": 0.668
+   },
+   "evidence_quality": {
+    "Clear": 0.566,
+    "Misleading": 0.001,
+    "N/A": 0.332,
+    "Not Clear": 0.101
+   },
+   "verification_timeline": {
+    "N/A": 0.187,
+    "already": 0.352,
+    "between_2_and_5_years": 0.26,
+    "more_than_5_years": 0.18,
+    "within_2_years": 0.021
+   }
+  },
+  "n_rows": 1000,
+  "counts": {
+   "gt_promise_yes": 813,
+   "gt_promise_no": 187,
+   "gt_T_already": 352,
+   "gt_T_within_2_years": 21,
+   "gt_T_between_2_and_5_years": 260,
+   "gt_T_more_than_5_years": 180,
+   "gt_Q_Clear": 566,
+   "gt_Q_Not Clear": 101,
+   "gt_Q_Misleading": 1,
+   "gt_E_Yes": 668,
+   "open_E_Yes": 656,
+   "gt_E_No": 145,
+   "open_E_No": 143,
+   "gt_E_N/A": 187,
+   "open_E_N/A": 82,
+   "ev_open_gtYes": 656,
+   "ev_open_gtNo": 143,
+   "ev_open_gtNA": 82,
+   "open_T_already": 343,
+   "open_T_within_2_years": 21,
+   "open_T_between_2_and_5_years": 256,
+   "open_T_more_than_5_years": 179,
+   "open_Q_Clear": 543,
+   "open_Q_Not Clear": 84,
+   "open_Q_Misleading": 1,
+   "falsely_open_T": 82,
+   "falsely_open_Q": 143
+  }
+ }
+}
