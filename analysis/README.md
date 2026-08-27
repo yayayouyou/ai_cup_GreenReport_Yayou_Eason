@@ -54,6 +54,12 @@ system's validation output, and every parameter in the paper is counted on it.
 | §4.3 | the compliance repick | `predict_repick.py` | — |
 | §4.1–4.2 | the cascade model itself (v1 / v2, forward simulation) | `cascade_model.py` | — |
 
+`check_claims.py` recomputes every **relational** claim the paper makes about these outputs --
+channel orderings, what transfers within `0.05`, what a price is, which field carries `0.1167` --
+and prints each next to the statement it licenses. Run it before quoting any of these numbers in
+prose. [`PAPER_CLAIMS.md`](PAPER_CLAIMS.md) explains why: across five review passes almost every
+defect was a wrong *sentence* about a right *number*, and a field lookup cannot catch those.
+
 `make_figures.py` draws the predicted-vs-observed scatter. The figure was cut from the final
 paper; the script is kept because the numbers behind it are in `out/binary_swap.json`.
 
