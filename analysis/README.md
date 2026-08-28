@@ -51,6 +51,8 @@ system's validation output, and every parameter in the paper is counted on it.
 | §7.1 | seed SD `0.0055`, roster gap `0.0013` | `bootstrap_apparatus.py` | `out/bootstrap.json` |
 | §3.3 | bootstrap misses a support-1 class, `(1−1/N)^N` | `bootstrap_apparatus.py` | `out/bootstrap.json` → `degenerate` |
 | §3.3 | ML-Promise `42` of `2,110` (`2.0%`), `30` of them promise=No with real quality, `1` *Misleading* | `metric_design_ablation.py` | `out/metric_design.json` → `mlpromise_transferable` |
+| §4.4 | baseline-script convention gap on identical predictions, `+0.0059` | `scorer_conventions.py` | printed |
+| §5.2 | test-point recount: `0.5267` / `0.4374`, `62.0%` outside (at test-counted `rho 0.9655` / `phi 0.3813`) | `weff_test_point.py` (needs the released test gold, not redistributed) | printed |
 | §4.3 | the compliance repick | `predict_repick.py` | — |
 | §4.1–4.2 | the cascade model itself (v1 / v2, forward simulation) | `cascade_model.py` | — |
 
@@ -116,7 +118,18 @@ plus 4 R2 violations, which is the 42 the paper uses.
 class set, weighted `0.20 / 0.30 / 0.35 / 0.15`. N/A is a scored class in *evidence* and is
 excluded from the averages of *quality* and *timeline*. Calling a library default instead moves
 the composite by `−0.0265` on validation and `+0.0242` on test — that is §7.1's whole subject, so
-it is not a detail.
+it is not a detail. The organizers' released baseline script scores yet another convention — N/A
+averaged into quality and timeline, plus a timeline label (`longer_than_5_years`) that no released
+data file uses — worth `+0.0059` on identical predictions; `scorer_conventions.py` prints the
+decomposition.
+
+**What depends on what.** The paper's claims sit in three tiers. The two lemmas (§3.3) use no
+predictions at all — only Eq. (1), the schema rules and the label counts. The effective weights
+and price list use counted error rates with zero fitted parameters; re-counting every rate on the
+released test labels at the shipped submission's own operating point reproduces the headline
+(`weff_test_point.py`: `0.5267 / 0.4374`, `62.0%` outside, vs validation's
+`0.5216 / 0.4268 / 61.7%`). Only the deployed score `0.6095` depends on the decision layer that
+§4.4 discloses was fitted on validation, and §7.1 audits what that cost.
 
 **What a "price" is.** The `price_list` rows are **not** derivatives. Each is the mean total-score
 gain from flipping *all* `n` offending rows to gold and dividing by `n` — a finite repair, so a row
