@@ -52,6 +52,8 @@ system's validation output, and every parameter in the paper is counted on it.
 | §3.3 | bootstrap misses a support-1 class, `(1−1/N)^N` | `bootstrap_apparatus.py` | `out/bootstrap.json` → `degenerate` |
 | §3.3 | ML-Promise `42` of `2,110` (`2.0%`), `30` of them promise=No with real quality, `1` *Misleading* | `metric_design_ablation.py` | `out/metric_design.json` → `mlpromise_transferable` |
 | §4.4 | baseline-script convention gap on identical predictions, `+0.0059` | `scorer_conventions.py` | printed |
+| §5.2 | W_eff bootstrap CI `[0.485, 0.542]` / `[0.403, 0.450]` (every rate recounted per replicate, B=400) and step sensitivity | `weff_ci.py` | printed |
+| §7.1 | leaderboard pair: `0` of `3,000` random splits under the schema set, within `0.001` under the present-labels default | `lb_split_search.py` (needs the released test gold, not redistributed) | printed |
 | §5.2 | test-point recount: `0.5267` / `0.4374`, `62.0%` outside (at test-counted `rho 0.9655` / `phi 0.3813`) | `weff_test_point.py` (needs the released test gold, not redistributed) | printed |
 | §4.3 | the compliance repick | `predict_repick.py` | — |
 | §4.1–4.2 | the cascade model itself (v1 / v2, forward simulation) | `cascade_model.py` | — |
