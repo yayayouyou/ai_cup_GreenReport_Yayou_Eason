@@ -65,6 +65,15 @@ for d in (1e-4, 1e-3, 1e-2):
     r, s, sh = weff(rows_all, d)
     print(f"  step {d:g}:  recall {r:.4f}   specificity {s:.4f}   share outside {100*sh:.1f}%")
 
+print("\n=== company halves: W_eff recounted on two disjoint company splits ===")
+comps = sorted({r.get("company", "?") for r in rows_all})
+for name, keep in (("companies A (odd)", set(comps[0::2])),
+                   ("companies B (even)", set(comps[1::2]))):
+    rr = [r for r in rows_all if r.get("company") in keep]
+    r_, s_, sh_ = weff(rr)
+    print(f"  {name:18s} n={len(rr):4d}  recall {r_:.4f}  "
+          f"specificity {s_:.4f}  share {100 * sh_:.1f}%")
+
 print("\n=== Q2: bootstrap over the 1,000 validation items (recount everything) ===")
 B = int(sys.argv[1]) if len(sys.argv) > 1 else 400
 rng = random.Random(20260829)
