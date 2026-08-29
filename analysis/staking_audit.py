@@ -2,7 +2,7 @@
 "the survivors of 38 candidates".
 
 During the evaluation the platform capped uploads at three per day. Between 2026-06-11 and
-2026-06-18 the team prepared 79 submission variants locally; across them, 38 distinct test items
+2026-06-18 the team prepared 76 submission variants locally; across them, 38 distinct test items
 were at some point forced to Misleading (the supervised head predicts essentially none, so every
 Misleading row in a submission file is a staked override). The shipped submission keeps five of
 the 38: 12306, 12599, 12606, 12743, 12772. The released labels confirm 12599.
