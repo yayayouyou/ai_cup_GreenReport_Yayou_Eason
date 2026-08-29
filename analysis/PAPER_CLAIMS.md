@@ -17,7 +17,7 @@ python check_claims.py
 
 ---
 
-## The seven failure modes
+## The eight failure modes
 
 Each is a real defect that survived at least one review pass. The example is the actual text that
 shipped in a draft.
@@ -106,6 +106,27 @@ the field macro (`check_claims.py` §3). This catches a wrong digit without reco
 
 **Rule.** For every universal (*every, all, none, together*), name the counterexample that would
 falsify it and check it exists in the paper's own tables.
+
+### H. Semantic residue: a repaired claim re-stated elsewhere in different words
+
+The paper's core repair was scoping the error cascade: one promise mistake creates downstream
+mistakes only for schema-respecting predictions (or this system's repick), while the gold labels
+alone make every downstream TARGET embed the gate (Lemma 2). After the named sentence was fixed,
+a semantic sweep (three lenses, adversarially verified) found the same unscoped claim surviving
+in ten other sentences that shared no wording with the original -- lexical scans had passed them
+all. Examples that shipped in a draft:
+
+| Shipped text | The residue |
+|---|---|
+| "the promise field is published at 0.20 and behaves like 0.52" | 0.52 stated as a property of the track; it is a derivative at this submission's operating point |
+| "one wrong promise puts an error into three other fields at once" | error propagation attributed to the composite alone; needs cascading predictions (and "three" needs a gold-open evidence row) |
+| "That restriction, and not any pipeline, is what prices a gate error" | the restriction prices, but only a *cascaded* error reaches the downstream fields |
+| "Lemma 2 is what makes the second a fact of the labels" | itself introduced by a repair one round earlier: Lemma 2 makes the *targets* label-facts, not the coupling |
+
+**Rule.** After repairing a claim, do not search for its wording -- search for its *content*:
+ask what every restatement (abstract, intro, related-work contrasts, section transitions,
+conclusion) asserts, and whether each carries the repair's condition or scoping. A repair can
+itself create a class-H instance (see row four).
 
 ---
 
