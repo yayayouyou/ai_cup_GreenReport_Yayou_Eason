@@ -1,0 +1,47 @@
+{
+ "points": {
+  "deployed(strong4)": 0.6095,
+  "diluted7(vote)": 0.6053,
+  "14-ensemble(raw binary)": 0.6108
+ },
+ "paired": {
+  "14-ensemble(raw binary) - deployed(strong4)": {
+   "mean": 0.0014,
+   "lo": -0.0116,
+   "hi": 0.0143,
+   "p_neg": 0.4095
+  },
+  "deployed(strong4) - diluted7(vote)": {
+   "mean": 0.0042,
+   "lo": -0.0025,
+   "hi": 0.0107,
+   "p_neg": 0.105
+  }
+ },
+ "seed_twins": {
+  "ckip_tapt_ep3 - ckip_tapt_ep3_s99": {
+   "mean": -0.0029,
+   "lo": -0.0147,
+   "hi": 0.0087,
+   "p_neg": 0.6925
+  },
+  "macbert_tapt - macbert_tapt_s777": {
+   "mean": 0.0028,
+   "lo": -0.01,
+   "hi": 0.0155,
+   "p_neg": 0.3575
+  },
+  "bgem3_tapt - bgem3_tapt_s777": {
+   "mean": -0.0034,
+   "lo": -0.0168,
+   "hi": 0.0091,
+   "p_neg": 0.705
+  },
+  "bgem3 - bgem3_s99": {
+   "mean": -0.0061,
+   "lo": -0.0201,
+   "hi": 0.008,
+   "p_neg": 0.79
+  }
+ }
+}

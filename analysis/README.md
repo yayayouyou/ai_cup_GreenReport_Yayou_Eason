@@ -57,6 +57,8 @@ system's validation output, and every parameter in the paper is counted on it.
 | §6.1 | `38` distinct candidates ever staked as Misleading; the shipped five are its survivors | `staking_audit.py` (needs the submission archive, not redistributed) | printed |
 | §5.2 | company halves `0.513` / `0.524` | `weff_ci.py` (company-halves section) | printed |
 | §4.3 | roster delta: strong4 vs diluted7, `rho +0.0098` / `phi +0.0107` | `roster_delta.py` | printed |
+| Table 2 | binary-source block `0.6053` / `0.6095` / `0.6108` | `paired_delta.py` (points) | printed |
+| §8 | paired bootstrap of the 14-vs-deployed difference `[-.0116, +.0143]` | `paired_delta.py` (seed 20260830, B=2000) | printed |
 | §5.2 | test-point recount: `0.5267` / `0.4374`, `62.0%` outside (at test-counted `rho 0.9655` / `phi 0.3813`) | `weff_test_point.py` (needs the released test gold, not redistributed) | printed |
 | §4.3 | the compliance repick | `predict_repick.py` | — |
 | §4.1–4.2 | the cascade model itself (v1 / v2, forward simulation) | `cascade_model.py` | — |
