@@ -34,6 +34,7 @@ system's validation output, and every parameter in the paper is counted on it.
 
 | Paper | Number | Script | Output |
 |---|---|---|---|
+| §3.1 toy | `M_G 0.829`, `M_D 0.900`, repair `+0.114` = `0.667` per point, `70%` in D, share `0.4` | `toy_example.py` | printed |
 | Table 2 (top) | val `0.6095`, per-field `.8148 .7083 .3855 .6607` | `oracle_and_weights.py` | `out/oracle_weights.json` → `B deployed` |
 | Table 2, intervals | iid half-width `0.0222`, cluster `0.0230`, ICC ≤ `0.034` | `bootstrap_apparatus.py` | `out/bootstrap.json` → `ci`, `icc` |
 | §5.2 RQ1 | `dS/dρ = 0.6078`, `dM_P/dρ = 1.1652`, **W_eff = 0.5216** | `oracle_and_weights.py` | `out/oracle_weights.json` → `effective_weight.via_recall` |
