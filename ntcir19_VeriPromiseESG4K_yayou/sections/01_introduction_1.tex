@@ -1,0 +1,110 @@
+\section{Introduction}
+\label{sec:intro}
+
+%% 目的：開場。三種合分方式擇一，加權平均最常見也最會誤導；立刻用 promise「公布 0.20、行為像 0.52」示範落差，
+%%       並在此一次把 w_f、C_f 的記號交代掉（原本這兩個符號要到表格才第一次出現）。
+A shared task with several dependent fields must decide how to combine them into one number, and
+the common choice --- a weighted average of the per-field scores --- is the one whose weights
+mislead. What an organizer publishes beside a field is not what that field is worth. In the NTCIR-19 AI CUP VeriPromise ESG track,
+whose corpus is VeriPromiseESG4K~\cite{day2026veripromiseesg4k}, the promise field is published
+at $0.20$ and, for our submission, behaved like $0.52$. Table~\ref{tab:schema} gives the four
+fields, each field's published weight $w_f$ and scored class set $C_f$.
+
+%% 目的：抽出造成落差的三個成分（固定權重的 macro-F1 平均、catch-all 類別、上游門控），據此推出兩個結論。
+%%       注意舊版寫成「N/A 被排除在它所門控的欄位之外」，那句話文法上讓 N/A 變成門控者、事實上也和表格矛盾。
+Three properties of that design open the gap, and none of them involves a model; the gap's width does. The per-field
+scores are macro-F1, averaged at fixed weights. One class, here N/A, marks a field that carries
+no real value; it is scored in some fields' averages and dropped from others. And an upstream
+field \emph{gates} those below it: its value decides whether they carry a real class at all. Two
+consequences follow once predictions respect the schema.
+
+%% 目的：Lemma 1。macro-F1 對類別平均而非對樣本平均，所以 support 不進價格。用 val 上「1 筆 Misleading 對 566 筆
+%%       Clear、同價」示範，再給一個讀者放得下尺度的比較。這裡的比較必須是完美 promise 門控（0.0770），
+%%       不能是完美 binary（0.1565）——後者比 0.1167 大，寫成那樣會是假的。
+\textbf{First}, macro-F1 averages over classes, not items. A scored class carries a share
+$w_f/|C_f|$ of the composite score whatever its \emph{support}, the number of items carrying it;
+how much of that share it collects depends on its own $F_1$, and on nothing else. Quality is
+published at $0.35$ over three scored classes, so each of the three carries $0.1167$. One validation paragraph is labelled
+\textsc{Misleading} --- greenwashing, where a company presents itself as greener than it is ---
+and $566$ are labelled \textsc{Clear}; the two classes are worth exactly the same. That $0.1167$
+is more than a perfect promise gate returns across all four fields ($0.0770$), and $3.7$ times
+what a perfect \emph{binary} --- promise and evidence --- returns through the two fields it
+gates ($0.0319$,
+Section~\ref{sec:res:oracle}). Our system scores $F_1 = 0$ on \textsc{Misleading} on validation,
+so the whole of that share is unclaimed.
+
+%% 目的：Lemma 2。門控錯誤在兩個方向上定價不同、且方向相反；由此定義 effective weight（在第一次用到它的地方
+%%       就定義，舊版是用完下一段才定義），給出 0.5216／0.4268，並補上「這是速率不是獎金」，否則讀者會拿它
+%%       和後面的 0.0319 對撞。最後一次性地把「不是在批評評分設計」講完，避免同一句主張散在三處。
+\textbf{Second}, a gate error is priced asymmetrically, and oppositely in its two directions. A
+gate that wrongly shuts emits N/A, which in quality and timeline is not a scored class, so the
+error costs recall and never precision; in evidence, where N/A is scored, the same error is
+charged twice. A gate that wrongly opens is the mirror. A gate therefore carries not one
+\emph{effective}
+weight~\cite{wang1970differential} but two --- the derivative of the composite with respect to
+that field's own macro-F1, one per direction, neither equal to its nominal $w_f$. Computing them
+needs the published weights, the class distribution and one operating point --- the rates at
+which the system in hand actually errs. Here the promise
+field, published at $0.20$, is worth $0.5216$ when its gate recall improves and $0.4268$ when its
+specificity does, because most of what it earns is collected in the fields it gates rather than
+in itself. Neither consequence is a critique of the design: the weights are the organizers'
+to set, and we leave them alone.
+
+\begin{table}[t]
+\caption{VeriPromiseESG4K. A class in parentheses is left out of that field's average;
+N/A is scored in \emph{evidence} and excluded in \emph{quality} and \emph{timeline}. The
+timeline classes are \texttt{already}, \texttt{within\_2\_years},
+\texttt{between\_2\_and\_5\_years} and \texttt{more\_than\_5\_years} in the released files.}
+\label{tab:schema}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lc>{\raggedright\arraybackslash}p{0.35\columnwidth}cc@{}}
+\toprule
+Field & $w_f$ & Labels & $|C_f|$ & $w_f/|C_f|$ \\
+\midrule
+promise (P)  & $0.20$ & Yes, No & 2 & $0.1000$ \\
+evidence (E) & $0.30$ & Yes, No, N/A & 3 & $0.1000$ \\
+quality (Q)  & $0.35$ & Clear, Not Clear, \textsc{Misleading}, (N/A) & 3 & $\mathbf{0.1167}$ \\
+timeline (T) & $0.15$ & already, ${\le}2$y, 2--5y, ${>}5$y, (N/A) & 4 & $0.0375$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% 目的：落到本資料集：語料規模、三個切分的大小（原本從未給，讓「三筆測試實例」無從放置），以及 schema 的兩條
+%%       門控規則——用來說明級聯不是我們 pipeline 的產物。direct／cascade 的定義移到 §6.2 實際做分解的地方，
+%%       因為在這裡定義完就要立刻破例，讀者得同時記住兩套互斥的分割。
+VeriPromiseESG4K follows the ML-Promise schema~\cite{seki2025mlpromise} in Traditional Chinese:
+four fields over $4{,}000$ paragraphs drawn from the sustainability reports of the fifty largest
+listed Taiwanese companies, split $1{,}000$ train, $1{,}000$ validation and $2{,}000$ test. Two
+schema rules do the gating: promise${=}$No forces evidence, quality and timeline to N/A, and
+evidence$\in\{$No, N/A$\}$ forces quality to N/A. The gate is therefore the promise decision
+itself, and by the second rule evidence is the gate on quality. Any schema-compliant prediction
+inherits those two binary decisions~\cite{silla2011survey}: a team predicting timeline
+``independently'' still answers the promise target with its N/A-versus-real split.
+
+%% 目的：點出兩個結論指向相反的努力分配（追稀有類別 vs 修門控）——解決這個衝突才是本文要做的事。
+The two consequences prescribe opposite allocations of effort: chase \textsc{Misleading}, or fix
+the gate. \textsc{Misleading} is worth more, and is worth it whatever its support. The gate is
+worth less, but unlike the rare class its gain yielded to ordinary engineering. Resolving
+that conflict for our system, by measurement, is what this paper does.
+
+%% 目的：定位相關工作的缺口（前人只講怎麼預測，沒講該往哪使力、也沒講支持數的份量），並交代分析所錨定的操作點。
+Existing work reports how each field is predicted, not where the effort should go or what a
+class's support is worth~\cite{wu2025cyut,nishi2025wcteam,leesombatwathana2025cscu}. Where effort
+should go needs an operating point, and we use the one we submitted (Section~\ref{sec:system}).
+
+%% 目的：C2：用數出來（而非擬合）的級聯模型，跨切分外推；把「值多少」與「修不修得到」分開；最後點出光是評分
+%%       慣例本身造成的偏差就和任何建模增益一樣大。原本這段用了 roster、the scoring convention 等只出現一次
+%%       又沒定義的名詞，改成讀者已經握有的詞。
+\leadin{Contributions, by source of evidence.} \emph{Derived} from the scorer, the schema and
+the label counts, before any prediction: a class's share of $S$ (Lemma~1), the gate written into
+every downstream target (Lemma~2), and the form of a cascade model that turns error rates,
+counted rather than fitted, into the four field scores. \emph{Measured on validation},
+which is also our development set: the gate's effective weights, the price of each kind of
+repair, a $-0.0265$ swing from how the composite is computed at all, larger than any gain our
+ensemble or decision-layer work returned, and one deployed decision below what validation can
+resolve (Section~\ref{sec:discussion}). \emph{On test, informed by leaderboard feedback} and so
+not an independent estimate (Section~\ref{sec:setup}): the real-class gate-open rates counted on
+validation hold there to within $0.05$, and of \textsc{Misleading}'s three instances we placed one, by search rather than
+detection. Together these separate what an error is \emph{worth} from whether it can be
+\emph{repaired}; we close with three additions to what a task overview reports.

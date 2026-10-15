@@ -1,0 +1,122 @@
+\section{Task, Data, and Two Lemmas}
+\label{sec:task}
+
+\subsection{Task and official metric}
+\label{sec:metric}
+
+%% 目的：定義官方加權 macro-F1（Eq.~1），全文所有推導都建在這個基準上。原本把 Table 1 的四個欄位與所有類別
+%%       用散文再打一次（-32 字），且 Eq.~1 只印數字、從未把 $w_f$ 綁上去，害 Lemma 1 引用一個式子裡沒有的符號。
+Each item is a Traditional-Chinese paragraph annotated on the four ML-Promise
+fields~\cite{seki2025mlpromise,chen2025semeval} of Table~\ref{tab:schema}. The official composite
+$S$ combines four macro-$F_1$ terms at fixed weights $w_f$,
+\begin{equation}
+S \;=\; \sum_{f} w_f M_f \;=\; 0.20\,M_{P} + 0.30\,M_{E} + 0.35\,M_{Q} + 0.15\,M_{T},
+\label{eq:score}
+\end{equation}
+with $M_f=\frac{1}{|C_f|}\sum_{c\in C_f}F_{1,c}$ averaged over the \emph{scored} class set $C_f$
+of that table only.
+
+%% 目的：N/A 排除只縮小「被平均的類別集」、不縮小資料集——這是緒論第二個結論的來源。FP/FN 的機制 §1 已經
+%%       完整講過，這裡只留結論不重講（-60 字）。原句「prices a gate error twice and in opposite currencies」
+%%       把兩個屬性宣告成一個，而且 twice 只對 E 成立、opposite 只對 Q/T 成立，冒號後又先給 Q/T，讀者會接反。
+The exclusion restricts the averaged class set, not the item set; we re-implement the scorer as
+\texttt{f1\_score(labels=$C_f$,\,average=macro)}, one of several macro-$F_1$
+variants~\cite{opitz2019macro}. That restriction, and not any pipeline, is what prices a cascaded gate
+error one-sidedly in $Q$ and $T$, where neither direction of error meets a scored N/A class, and
+charges it twice in $E$, where N/A is itself scored (Section~\ref{sec:intro}).
+
+\leadin{Three quantities, one toy.} A field's \emph{nominal weight} $w_f$ is what the organizers
+publish; a class's \emph{per-class share} $w_f/|C_f|$ is the most it can add to $S$, whatever its
+support (Lemma~1); a field's \emph{effective weight} is the local marginal gain in $S$ per point of
+$M_f$ at an operating point, along one direction of repair, counting what it earns in the fields
+it gates (Eq.~\eqref{eq:weff}). Take six items, a gate $G$ ($w{=}0.2$; Yes, No) and a field $D$
+($w{=}0.8$; classes $a$, $b$; N/A unscored), gold three (Yes,\,$a$), one (Yes,\,$b$) and two
+(No,\,N/A). Class $b$, one item, carries the same $0.4$ share as $a$'s three. A system wrong only
+by sending one $a$-item to (No,\,N/A) scores $M_G{=}0.829$ and $M_D{=}0.900$. Repairing that
+item lifts $S$ by $0.114$ and $M_G$ by $0.171$, an average of $0.667$ per point against a nominal
+$0.2$; the local rate at this operating point, the effective weight, is $0.79$, three quarters of
+it earned in $D$.
+
+\subsection{Data and label distribution}
+\label{sec:data}
+
+%% 目的：語料規模、切分，以及所有欄位的標記分布。原本只給了 quality 一個數字，但 quality 是扛整篇論證的欄位，
+%%       而摘要與 §1 引用的 566 在論文裡從來沒有出處；test 的 290 也從未出現，Lemma 2 在 test 上等於沒證。
+VeriPromiseESG4K~\cite{day2026veripromiseesg4k} splits $4{,}000$ labelled paragraphs
+$1{,}000/1{,}000/2{,}000$ into train, validation and test; the test labels were released after the
+evaluation closed, so every test figure here is post-hoc (protocol,
+Section~\ref{sec:setup}). The test set was scored as two partitions whose membership and sizes
+were never published, so \textsc{Misleading}'s test support can be reported only as a total, 3.
+
+Counts by split, train/validation/test. Promise Yes:No is $814{:}186$, $813{:}187$ and
+$1{,}625{:}375$; evidence Yes:No:N/A is $677{:}137{:}186$, $668{:}145{:}187$ and
+$1{,}335{:}290{:}375$; quality Clear:Not~Clear:\textsc{Misleading} is $552{:}124{:}1$,
+$566{:}101{:}1$ and $1{,}106{:}226{:}3$. Timeline already:${\le}2$y:2--5y:${>}5$y, train and
+validation only, is $366{:}13{:}238{:}197$ and $352{:}21{:}260{:}180$. \textsc{Misleading} and
+${\le}2$y are the two small scored classes, and \textsc{Misleading} is the only one of support~1.
+
+\subsection{Two lemmas}
+\label{sec:lemma}
+
+%% 目的：過渡（原本 59 字的路線圖，壓成一句）。
+Both consequences follow from Eq.~\eqref{eq:score}, the
+schema rules, these counts and an operating point; Lemma~2 is what writes the gate into every
+downstream target, ours or anyone's.
+
+%% 目的：Lemma~1（反支持數）。原本的陳述是錯的：類別貢獻的是 $\frac{w_f}{|C_f|}F_{1,c}$，$w_f/|C_f|$ 只是係數
+%%       ——所以「all or nothing」在 support 1 也不成立（打 $k$ 筆命中那一筆得 $F_1=2/(k+1)$），而且這正是 §6.3
+%%       算出「抓到那一筆只回收 0.0065」的原因。另外原證明說「Immediate from macro-averaging」漏掉了關鍵前提：
+%%       $C_f$ 要由評分器固定，若照 sklearn 預設從資料推得，這條 lemma 是假的。
+\leadin{Lemma 1 (inverse support).} \emph{Under Eq.~\eqref{eq:score} a scored class $c\in C_f$
+enters $S$ with coefficient $w_f/|C_f|$, irrespective of its support $n_c$.} Immediate once $C_f$
+is fixed by the scorer rather than read off the data (Section~\ref{sec:metric}): $M_f$ weights
+classes, not items, so $c$ contributes $\tfrac{w_f}{|C_f|}F_{1,c}$ and no term of $S$ sees $n_c$.
+A quality class is therefore worth up to $0.35/3=0.1167$ of $S$, and
+\textsc{Misleading} carries that coefficient on the strength of one validation paragraph. The
+share is collected, not won outright: at $n_c{=}1$, predicting the class on $k$ paragraphs and
+hitting the gold one scores $F_{1,c}=2/(k{+}1)$, so recall buys entry and precision fixes how much
+of the coefficient is kept. $F_{1,c}$ at
+$n_c{=}1$ admits no meaningful item-bootstrap interval: a bootstrap over the $N{=}1{,}000$ validation
+items misses a support-1 class with probability $(1-1/N)^{N}\to e^{-1}$, and $3{,}641$ of $10^4$
+replicates contain no \textsc{Misleading} item at all. In those replicates the class has no gold
+instance, so its $F_1$ is $0$ by convention rather than by measurement, and
+the per-class ``interval'' mixes two different populations. \emph{Support, not $N$, is what a
+macro-$F_1$ term resolves}: for such a class we report a count and a point estimate rather than
+an item-bootstrap interval.
+
+%% 目的：Lemma~2（門控即標籤）。改用雙條件式直接陳述（比原本把雙條件式寫成英文散文更短也更準），並且把
+%%       「gold 標籤集合相等」和「任何系統的行為」分開——原句 "the same decision as promise identification"
+%%       宣稱的比證出來的多。證明本身有效（A⊆B 且 |A|=|B| 有限 ⟹ A=B），但原文只印了包含關係的一邊。
+\leadin{Lemma 2 (the gate is the label).} \emph{On this corpus $T{=}\text{N/A}\iff
+E{=}\text{N/A}\iff P{=}\text{No}$, and $Q{=}\text{N/A}\iff E\in\{\text{No},\text{N/A}\}$: the
+N/A-versus-real decision in each downstream field has the same target as the upstream field's own
+decision.} The schema imposes two deterministic rules: \textbf{R1}, promise${=}$No $\Rightarrow$
+evidence, quality and timeline all N/A; \textbf{R2}, evidence$\in\{$No, N/A$\}\Rightarrow$
+quality${=}$N/A. Both hold on all three splits with \emph{zero violations}. Each rule gives one
+inclusion, $\{P{=}\text{No}\}\subseteq\{T{=}\text{N/A}\}$ and
+$\{E\in\{\text{No},\text{N/A}\}\}\subseteq\{Q{=}\text{N/A}\}$, and on a finite split an inclusion
+whose two sides have equal cardinality is an equality, so counting \emph{both} sides upgrades each
+to a biconditional. Both agree on every split:
+$|T{=}\text{N/A}|=|E{=}\text{N/A}|=|P{=}\text{No}|$ is 186, 187 and 375, while
+$|E\in\{\text{No},\text{N/A}\}|=|Q{=}\text{N/A}|$ is $323{=}137{+}186$, $332{=}145{+}187$ and
+$665{=}290{+}375$.
+
+%% 目的：Lemma~2 的意義：級聯不是我們架構的產物。原本這裡有一句說被門控的項目「is deleted from the field's
+%%       scored support」——那和 3.1 開頭「restricts the averaged label set, not the item set」直接矛盾，
+%%       而且若真被刪掉，整篇賴以立論的「只賠 recall 不賠 precision」就不成立了。刪除，citation 改掛在對的主張上。
+The cascade of targets is therefore no artefact of our architecture but the familiar hierarchical one. What
+does differ across architectures is whether a system's \emph{errors} factor as
+Eq.~\eqref{eq:factor} does; ours do by construction, because the repick of
+Section~\ref{sec:system} leaves a closed gate no output but N/A.
+
+%% 目的：外部效度。ML-Promise 的 evidence 只有 Yes/No、根本沒有 N/A 類別，所以 R1 的 evidence 那一項在那邊
+%%       無從適用；可轉移的是 R1 對 quality/timeline 與 R2 對 quality。照這個定義重數是 42/2110。並補上
+%%       §1 說「不依賴語料」與這裡 2% 違反率之間的裁決。
+\leadin{Beyond one competition.} R1--R2 belong to the annotation schema, so counting can test
+them elsewhere. On ML-Promise, which scores evidence without an N/A class, 42 of $2{,}110$ items
+across five languages break R1 on quality or timeline, or R2 ($2.0\%$, against 0 of $4{,}000$ here). The residue is not
+scattered: 30 of the 42 are promise${=}$No rows carrying a real quality judgement, one of them
+\textsc{Misleading} (Section~\ref{sec:errors:mis}), and in Korean they are $22.3\%$ of its
+promise-No rows. The arithmetic of Eq.~\eqref{eq:score} transfers; its numbers do not, since
+evidence's scored N/A, the gate's largest channel here (Section~\ref{sec:res:weight}), is absent
+there. The restricted rules hold for $98\%$ of ML-Promise's items by count.

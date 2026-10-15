@@ -1,0 +1,220 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{The system and the upstream ladder}
+\label{sec:res:main}
+
+%% 目的：給部署系統的分數與區間，並把測試側的 like-for-like 講清楚（0.5983 對 shipped 自己的 0.6087）。
+%%       三個 RQ 的列舉已刪——四個子節標題逐字說著同樣的話。排行榜取證（3000 次分割、0.6225）也刪，
+%%       那些數字這一段自己說「不拿來接任何東西」，而 §7.1 才真正量它。
+Table~\ref{tab:main} gives the deployed system on val-1000 with bootstrap
+intervals, and three ensembles spliced as the binary source into one
+frozen downstream pipeline. One interval property matters later: company-clustered resampling
+moves the total half-width only from $0.0222$ to $0.0230$, and narrows it on two of the four
+fields, so we report both; Section~\ref{sec:discussion} says why that points at the training side
+rather than the evaluation side.
+
+The system's one official run read $0.6760$ public and $0.6405$ private on the live
+leaderboards; rescored post hoc against the released labels under the schema label set of
+Eq.~\eqref{eq:score}, the same predictions give $0.6275$, below both readings, a gap consistent with a different label set
+(Section~\ref{sec:discussion}); all three are leaderboard-informed (Section~\ref{sec:setup}). Nor is $0.6275$ the
+like-for-like figure: it includes five items
+hand-forced to \textsc{Misleading}, of which the labels confirm one, and the validation side
+carries no such intervention because the forced identifiers lie outside its range. Withdraw the
+confirmed one and test reads $0.5983$ against the shipped build's own $0.6087$ on validation
+(Section~\ref{sec:system}), a gap of $0.0104$; Section~\ref{sec:res:price} prices what the five
+forced items did.
+
+\begin{table}[t]
+  \centering
+  \caption{\textbf{Top}: the deployed roster on val-1000, reconstructed as in
+  Section~\ref{sec:system}; 95\% percentile bootstrap ($B{=}10{,}000$), ``cluster'' resamples the
+  50 companies; intervals condition on the frozen predictions and exclude model-selection
+  uncertainty. \textbf{Bottom}: the same frozen downstream with only the binary source changed,
+  so the deployed roster's own row reproduces the total above; the 14-model row takes the
+  downstream multi-task checkpoints as the binary source.}
+  \label{tab:main}
+  \footnotesize
+  \begin{tabular}{llccc}
+    \toprule
+    Field & $w_f$ & $M_f$ & 95\% CI (iid) & 95\% CI (cluster) \\
+    \midrule
+    promise   & 0.20 & 0.8148 & [.7807,.8468] & [.7844,.8459] \\
+    evidence  & 0.30 & 0.7083 & [.6706,.7433] & [.6635,.7496] \\
+    quality   & 0.35 & 0.3855 & [.3551,.4141] & [.3559,.4137] \\
+    timeline  & 0.15 & 0.6607 & [.6089,.7032] & [.6004,.7053] \\
+    total $S$ &      & \textbf{0.6095} & [.5864,.6308] & [.5854,.6313] \\
+    \midrule
+    \multicolumn{5}{l}{\textit{binary source (downstream frozen)}} \\
+    \multicolumn{2}{l}{\quad diluted 7-model vote}  & \multicolumn{3}{l}{$0.6053$} \\
+    \multicolumn{2}{l}{\quad \textsc{strong4} (deployed)} & \multicolumn{3}{l}{$0.6095$} \\
+    \multicolumn{2}{l}{\quad 14-model ensemble}      & \multicolumn{3}{l}{$0.6108$} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{RQ1: what is the promise gate worth?}
+\label{sec:res:weight}
+
+%% 目的：RQ1：在部署操作點算出 promise 的有效權重 0.5216（另一方向 0.4268），並按目的地欄位拆解，
+%%       得出 62% 的貢獻收在 promise 之外。CLaC 那一段移到 §2（那裡已經帶著 0.2330/0.2575 講完），
+%%       段末重述命題的那句也刪掉——同一句話這一節已經是第四次。
+At the deployed operating point ($\rho = 0.9828$, $\varphi_T = 0.4385$) the counted model answers
+RQ1 directly: marginal gate recall moves the total at
+$\mathrm{d}S/\mathrm{d}\rho = +0.6078$ and the promise field at
+$\mathrm{d}M_P/\mathrm{d}\rho = +1.1652$, so promise's effective weight is
+$W_{\mathrm{eff}}(P) = 0.6078/1.1652 = \mathbf{0.5216}$ (bootstrap $95\%$ CI
+$0.485$--$0.542$; company halves $0.513$/$0.524$) against a nominal $0.20$, a factor of $2.6$. The specificity
+direction gives $0.4268$ ($0.403$--$0.450$), $2.1\times$ nominal: the published $0.20$ locates
+neither. By destination field, $\mathrm{d}S/\mathrm{d}\rho$ splits into promise $+0.2330$,
+evidence $+0.2575$, quality $+0.0720$, timeline $+0.0452$: \textbf{$61.7\%$ of the marginal
+contribution of a better promise decision is collected outside the promise field}, the largest
+channel being the evidence field's \emph{scored} N/A class (Section~\ref{sec:metric}).
+Recounted on the released test labels at the shipped submission's own operating point, all three
+reappear: $0.5267$, $0.4374$, $62.0\%$ outside.
+
+%% 目的：讓 decomposition 可否證——一次有限的改善應該落在導數說它會落的地方。實測只對一半：
+%%       導數說 61.7% 收在 promise 之外，完整 gold-splice 說 51.9%。方向與通道排序成立，份額不成立。
+The decomposition is falsifiable against a finite move, and it is only partly right:
+gold-splicing promise the whole way (Section~\ref{sec:res:oracle}) puts $51.9\%$ of the gain
+outside the promise field against the derivative's $61.7\%$. The direction survives; the leading
+channel and the share do not, and the gap is the curvature between a marginal and a total
+change.
+
+\subsection{RQ2: is the cascade model predictive?}
+\label{sec:res:swap}
+
+%% 目的：RQ2：換上游、下游全凍，看模型能不能預測沒被動過的兩個欄位。誠實揭露一半是恆等式，
+%%       並給出「有條件的否定」——平均值 0.0020、v1 0.0014、v2 0.0023，越低越好，我們部署的那個沒贏。
+Because the model has no tuned parameters (Section~\ref{sec:identify}), the swap asks what its one
+empirical assumption costs: that a downstream head's accuracy given an open gate does not depend
+on which gate opened it. Holding that fixed, we swap only the binary source across the 42
+independently trained single models of Section~\ref{sec:setup}, which form ten backbone families;
+\textsc{strong4} is an ensemble over four of them and is not itself among the 42. Gate parameters
+are recounted per source; nothing downstream is retrained or re-thresholded, so all timeline and
+quality movement is cascade by construction. Observed promise spans $.769$--$.815$, and the two
+unmodified fields move with it: timeline $.651$--$.661$, quality $.368$--$.396$.
+
+Half the composite is not at risk here and we say so: given a source's gate counts, the promise
+and evidence macros are the observed tables rewritten, reproduced to $10^{-16}$ by arithmetic
+rather than by prediction. What the swap predicts is $U = 0.35\,M_Q + 0.15\,M_T$, spanning
+$0.0092$ across the 42 sources. Against a leave-one-out mean of $U$ --- the fair comparator once
+those identities are granted to it too --- mean absolute error is $0.0020$, the class-independent
+variant reaches $0.0014$ and the class-conditional one $0.0023$, lower being better. RQ2 therefore
+gets a qualified no for the variant we deploy, and the margin by which the other one wins is not
+resolvable from ten families on one split. We keep $\gamma_c$ for identification, not accuracy.
+
+%% 目的：參數本身才是發現：級聯傷害不均勻，而且在 test 上重數也站得住（水準差在 0.05 以內）。
+The parameter, not the prediction, is the finding, and it is counted rather than fitted: cascade
+damage is not uniform. The gate closes on $16.8\%$ of gold \textit{Not Clear} items but only
+$4.1\%$ of \textit{Clear} ones ($\gamma_Q = 0.832$ and $0.959$); $\gamma_T$ runs from $0.974$ on
+\textit{already} to $1.000$ on $\le$2y. In quality the gate closes hardest on the class the
+downstream head is already weakest on (Section~\ref{sec:errors}), which macro-averaging weights as
+heavily as the strong one; timeline places its closures the other way, on \texttt{already}, and
+loses less throughout. Because one system is scored on both splits this can be checked: on the
+released test labels $\gamma_Q$ is $0.788$ on \textit{Not Clear} against $0.943$, and $\gamma_T$ is $0.948$ on
+\textit{already} --- ordering and levels both hold, within $0.05$ on every one.
+
+\subsection{RQ3a: how much headroom, and where?}
+\label{sec:res:oracle}
+
+%% 目的：用 gold-splice 的 2x2 oracle 把上限量化（+0.1565 = direct 0.1246 + cascade 0.0319），
+%%       原本花了 74 字宣告一個反對意見再回答它、再用文字重述一次答案，範圍本身就是答案。
+%%       「被救回的資料是不是比較難」那四句（timeline 那半邊結論是「無法判定」）壓成一個子句。
+To bound the cascade we splice gold labels into the gate in a $2\times2$ design, downstream
+unchanged (Table~\ref{tab:oracle}). A perfect binary contributes $+0.1565$: $+0.1246$
+\emph{direct}, in promise and evidence themselves, and $+0.0319$ ($20.4\%$) \emph{cascade}, in
+the timeline and quality fields that no module modified. Promise alone accounts for $0.0770$ of
+that total and a third of the cascade term, so the cascade term belongs to the binary source as a
+whole rather than to promise. Under a perfect gate the downstream modules cap
+at $0.6905$ on timeline and $0.4640$ on quality --- ceilings no upstream effort moves
+(Section~\ref{sec:errors}). Rescued rows are harder in quality ($0.675$ right, $n{=}40$, against $0.839$ of
+the already-open ones), so the $+0.0319$ is a floor there.
+
+\begin{table}[t]
+\centering\footnotesize
+\caption{Top: gold-splice oracle on validation, direct versus cascade points. Bottom: what one
+repaired error contributes, in $10^{-4}$ points, with how many are available. Each price is the mean gain
+from repairing all $n$ such rows to gold, promise repairs carrying the evidence they gate; sums
+across rows are first-order only.}
+\label{tab:oracle}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Gate / scored source & $S$ & P & E & T & Q \\
+\midrule
+B\; model gate, model scored & 0.6095 &.8148 &.7083 &.6607 &.3855 \\
+O$_P$\; gold promise & 0.6864 & 1.000 &.8067 &.6905 &.4024 \\
+O$_E$\; gold evidence & 0.6761 &.8148 &.8708 &.6607 &.4364 \\
+O$_{PE}$\; both gold & \textbf{0.7660} & 1.000 & 1.000 &.6905 &.4640 \\
+\midrule
+\multicolumn{6}{@{}l@{}}{headroom $+0.1565 =$ direct $+0.1246 +$ cascade $+0.0319$ (20.4\%)}\\
+\midrule
+\multicolumn{4}{@{}l}{Repair} & points & $n$ \\
+\midrule
+\multicolumn{4}{@{}l}{one true \textsc{Misleading} caught} & \textbf{63.9} & 1 \\
+\multicolumn{4}{@{}l}{quality conditional fix} & 7.0 & 101 \\
+\multicolumn{4}{@{}l}{promise false negative} & 8.5 & 14 \\
+\multicolumn{4}{@{}l}{evidence error, gate open} & 6.6 & 106 \\
+\multicolumn{4}{@{}l}{promise false positive} & 8.8 & 82 \\
+\multicolumn{4}{@{}l}{timeline conditional fix} & 1.7 & 266 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{RQ3b: what is one repair worth, or one rare class?}
+\label{sec:res:price}
+
+%% 目的：RQ3b：把每一種可修錯誤換算成總分單位，凸顯 Misleading 那一列遠超其他、且我們一分未得。
+%%       原本「138 次修復」旁邊就是 n=14，讀者會想去比一個不存在的量，補上「而實際只有 14 個」。
+The same model expresses every repairable error in total-score units (Table~\ref{tab:oracle}),
+computable before any submission from the field weights, label distribution and operating point
+alone. By Lemma~1 the \textit{Misleading} class is worth $0.1167$ whatever its support --- as much
+as $138$ promise false-negative repairs would return, against the 14 such errors that exist ---
+which exceeds the whole cascade headroom ($0.0319$) and rivals the direct-binary headroom
+($0.1246$). On validation we score $F_1{=}0$ there, so none of it is recovered. What a single
+\emph{catch} returns depends on what the system already emits: the repick places 35 validation
+items in that class, none correct, so adding the one true item ($k{=}36$) returns $0.0064$ ---
+$0.0063$ of it \textsc{Misleading} at $F_{1,c}=2/37$. The slot is large because the
+class is unclaimed; the catch is small because the slot is already spent badly.
+
+\leadin{That contribution is observable on our own submission.} The shipped file forces five items
+to \textsc{Misleading} and the released labels confirm exactly one. Withdrawing the four wrong
+ones, one at a time, traces the curve on the artefact we actually submitted:
+
+{\centering\footnotesize
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+items forced \textsc{Misleading} & 4$^{\dagger}$ & 5 & 4 & 3 & 2 & 1 \\
+\midrule
+test quality macro & .3676 & .4511 & .4629 & .4786 & .5010 & \textbf{.5342} \\
+total $S$ & .5983 & \textbf{.6275} & .6317 & .6372 & .6450 & .6566 \\
+\bottomrule
+\end{tabular}\par}
+\noindent{\footnotesize $^{\dagger}$the four false positives alone, with the confirmed item
+withdrawn. Column two is the submitted file.}
+
+Withdrawing false positives raises the field monotonically, $0.0831$ in all; the set that keeps
+only the four wrong guesses scores $.3676$, which is what forcing nothing at all scores ($.3675$)
+--- four confident placements on the rare class are worth effectively nothing. Every column is
+Lemma~1 arithmetic: with one of the three gold instances found, precision $1/k$ over $k$ forced
+items gives the class $F_1 = 2/(3+k)$. The two directions are not interchangeable: at the
+submitted $k{=}5$ a withdrawal adds $0.0119$ to the field and a further catch adds $0.0833$, a
+factor of seven. Against the $.3675$ of forcing nothing, the one correct placement is worth
+$+0.0292$ of the total --- more than the $+0.0042$ our ensemble search returned
+(Table~\ref{tab:main}). That
+is a statement about the scorer, not about detection (Section~\ref{sec:errors:mis}).
+
+%% 目的：裁決。§1 承諾「解決這個衝突才是本文要做的事」，但原本 Results 把兩邊都定完價就停了，
+%%       讀者手上握著兩個數字沒有結論——而最大的那個是 0.1167，他會自己推論「去追 Misleading」。
+%%       這一段是全篇唯一讓 0.1167、0.0319、0.5216 並排出現並給出判決的地方。
+\leadin{The conflict, resolved by these numbers.} Lemma~1 makes the rare class tied for the largest
+scored \emph{class} on the board, $0.1167$ --- above either field's own oracle gain (promise
+$0.0770$, evidence $0.0666$), though below the two-field binary headroom of $0.1565$, which is
+neither one class nor one repair. Eq.~\eqref{eq:weff} makes the gate worth $0.5216$ per point of
+its own macro, $2.6$ times its published weight. The
+two prices, in different units, do not settle it, because a price is not an invoice: of the rare
+class's $0.1167$ we
+collected nothing on validation and $0.0292$ on test, from one placement out of five guesses,
+while the gate's gains were reachable by ordinary subset selection. For our system, only upstream
+effort showed any gain on validation; at supports of 1 and 3 we draw no general rule for
+the rare class (Section~\ref{sec:errors:mis}).

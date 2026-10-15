@@ -1,0 +1,194 @@
+%% TEAM_10049 at the NTCIR-19 AI CUP VeriPromise ESG Track
+%% Template: official NTCIR-19 sample (ACM Master article template, sigconf).
+%%   https://research.nii.ac.jp/ntcir/ntcir-19/Templates/NTCIR-19_template.tex
+%%   Overleaf: https://www.overleaf.com/read/mmwykhzrhxsg#bbe78a
+%% HARD LIMIT: 8 pages INCLUDING references.
+%% TWO MODES: pdfLaTeX = drafting (Chinese shown as [zh], 1.6 s, fits Overleaf free plan).
+%%             LuaLaTeX or XeLaTeX = submission (real Chinese). THE SUBMITTED PDF MUST BE
+%%             BUILT WITH LuaLaTeX OR XeLaTeX. See README_OVERLEAF.md.
+\documentclass[sigconf,article]{acmart}
+
+%% --- the four "for NTCIR proceedings" lines, kept exactly as the official sample has them ---
+\settopmatter{printacmref=false}                        % removes the ACM reference block
+\renewcommand\footnotetextcopyrightpermission[1]{}      % removes the conference footnote
+\pagenumbering{gobble}                                  % no page numbers in the submitted PDF
+\settopmatter{printfolios=false}
+
+\usepackage{booktabs}
+\usepackage{array}     % >{\raggedright\arraybackslash}p{} in Table 1
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{balance}   % even out the final column so the bibliography does not spill
+
+%% Run-in bold lead for the research questions, contributions and named results.
+%% acmart patches \vspace (what \smallskip expands to) and warns when it opens a
+%% paragraph instead of flanking a float; \addvspace is not patched and the spacing
+%% is identical, so the 18 "\vspace should only be used..." warnings go away.
+\newcommand{\leadin}[1]{\par\addvspace{\smallskipamount}\noindent\textbf{#1}}
+
+%% ===================== CJK HANDLING — read before changing =====================
+%% Section 7 quotes Traditional Chinese. Every such run is wrapped in \zh{...}; no other
+%% CJK byte exists in any source file (checked mechanically). The engine is therefore a
+%% one-macro switch, which is what makes the two modes below possible.
+%%
+%% Three things were learned the hard way and are encoded here:
+%%
+%% 1. DO NOT PUT xeCJK BACK. It is XeTeX-only. Under any other engine it refuses to load,
+%%    \setCJKmainfont is left undefined, and LaTeX typesets its arguments as body text —
+%%    that is where the stray "NotoSerifTC-paper-subset.ttf[Path=./fonts/]" lines on page 1
+%%    of the 2026-08-07 Overleaf build came from. fontspec's \newfontfamily behaves
+%%    identically on XeTeX and LuaTeX, so a local XeLaTeX check is valid evidence for the
+%%    LuaLaTeX result.
+%%
+%% 2. DO NOT PICK A FONT BY NAME OR BY BARE FILENAME. Two earlier preambles did (arphic's
+%%    bsmi00lp.ttf, then "Noto Serif CJK TC"); the Overleaf container had neither. Both
+%%    times the compile SUCCEEDED and every Chinese character was silently dropped. The
+%%    font now travels with the project — fonts/NotoSerifTC-paper-subset.ttf, Noto Serif TC
+%%    (OFL-1.1) subset to exactly the characters used, 58 KB, loaded with Path=./fonts/ so
+%%    there is no lookup left to fail. A successful compile is NOT evidence the Chinese
+%%    rendered: the submission PDF must contain 110 CJK characters and zero [zh] markers.
+%%    Rerun `python paper/make_font_subset.py` after adding or changing any Chinese.
+%%
+%% 3. CJK RUNS NEED EXPLICIT BREAKPOINTS. Chinese has no inter-word spaces, so without
+%%    xeCJK a run is one unbreakable box and the Table 4 excerpts overflowed their cells by
+%%    up to 186pt. \zh walks the run and inserts zero-width glue after each character.
+%% ==============================================================================
+\usepackage{iftex}
+\ifpdftex
+  %% -------- DRAFTING MODE (pdfLaTeX) --------
+  %% pdfTeX cannot typeset CJK under any font setup. \zh DISCARDS its argument: the tokens
+  %% are absorbed and never expanded, so the UTF-8 bytes never reach the typesetter and
+  %% raise no errors. A visible [zh] marker is printed so the omission is never silent.
+  %% This exists so the paper still compiles on Overleaf's free plan, where LuaLaTeX and
+  %% XeLaTeX both exceed the timeout — co-authors can read and edit the English prose there.
+  %% THE SUBMITTED PDF MUST BE BUILT WITH LuaLaTeX OR XeLaTeX, or the Chinese is missing.
+  \newcommand{\zh}[1]{{\slshape[zh]}}
+  \typeout{^^J*** DRAFTING MODE: pdfLaTeX cannot typeset the Chinese excerpts.^^J%
+           *** Build the submission PDF with LuaLaTeX or XeLaTeX.^^J}
+\else
+  %% -------- SUBMISSION MODE (LuaLaTeX or XeLaTeX) --------
+  %% fontspec's \newfontfamily behaves identically on both engines, so a local XeLaTeX
+  %% check is valid evidence for the LuaLaTeX result.
+  \newfontfamily\cjkfont{NotoSerifTC-paper-subset.ttf}[Path=./fonts/]
+  %% Chinese has no inter-word spaces, so a run is one unbreakable box: the Table 4
+  %% excerpts overflowed their cells by up to 186pt. \zh walks the run and puts zero-width
+  %% glue after each character — a legal breakpoint that prints nothing.
+  \ExplSyntaxOn
+  \NewDocumentCommand{\zh}{m}{\group_begin:\cjkfont\__zh_break:n{#1}\group_end:}
+  \cs_new_protected:Npn \__zh_break:n #1 {\tl_map_inline:nn {#1} {##1\hspace{0pt}}}
+  \ExplSyntaxOff
+\fi
+
+\begin{document}
+
+%% ============================================================
+%% FRONT MATTER  (for main.tex, between \begin{document} and the section \input's)
+%% ============================================================
+
+%% \texorpdfstring: the line break is for the typeset title only. A bare \\ here makes
+%% hyperref warn ("Token not allowed in a PDF string") and drop it from the PDF metadata.
+\title{TEAM\_10049 at the NTCIR-19 AI CUP VeriPromise ESG Track: What a Field Is Really Worth under a Gated, Rare-Class Metric}
+%% Earlier title candidates (kept for reference):
+%\title{A Subtask Published at Weight 0.20 Is Worth 0.541: Effective Weights in a Gated, Rare-Class Composite Metric
+%       \texorpdfstring{\\}{ }TEAM\_10049 at the NTCIR-19 AI CUP VeriPromise ESG Track}
+%\title{One Misleading Paragraph Is Worth 138 Promise
+%       Errors:\texorpdfstring{\\}{ }Effective Weights in a Gated, Rare-Class Composite Metric}
+
+\author{Ya-You Shih}
+\affiliation{%
+  \institution{National Central University}
+  \city{Taoyuan}
+  \country{Taiwan}}
+\email{s112504506@g.ncu.edu.tw}
+
+\author{Yi-Hsin Wang}
+\affiliation{%
+  \institution{National Taiwan Normal University}
+  \city{Taipei}
+  \country{Taiwan}}
+\email{easonworking0201@gmail.com}
+
+\author{Chia-Hui Chang}
+\affiliation{%
+  \institution{National Central University}
+  \city{Taoyuan}
+  \country{Taiwan}}
+\email{chiahui@g.ncu.edu.tw}
+
+\begin{abstract}
+%% 目的：摘要共三段，233 字。標準 CS 寫作語域；不放未定義符號，也不放讀者無法判斷大小的數字。
+%%       用語一律 field（P/E/Q/T 之一）與 class（一個 field 可取的值），不再用 label 兼指兩者。
+%% 目的：第一段——先講這種評分設計是什麼（加權平均、catch-all 類別、上游門控），結論句是「公布的權重
+%%       不能拿來判斷邊際分數」。這是全篇的命題。
+Shared tasks increasingly score several dependent fields per item as a weighted average of
+per-field macro-F1. One field typically gates the others: when its value is negative, the rest
+take a catch-all class, N/A, scored in some averages and excluded from others. The
+published field weights are then a poor guide to marginal score.
+
+%% 目的：第二段——兩個結論各一句、各一個讀者放得下尺度的數字。第一個用「val 上 1 筆 Misleading 對
+%%       566 筆 Clear、同價 0.1167」，比較對象必須是完美 promise 門控（0.0770）而不是完美 binary
+%%       （0.1565，比 0.1167 大，寫成那樣是假的）。第二個給兩個方向的有效權重，不能只給一個。
+Two consequences follow from the scorer once predictions respect the schema. First, macro-F1 averages over classes rather than
+items. In NTCIR-19 AI CUP VeriPromise, an ESG promise-verification task, one validation paragraph
+is labelled \emph{Misleading} and $566$ are labelled \emph{Clear}; both carry the same $0.1167$
+share of the composite, more than a perfect promise gate returns across all four fields. Second,
+most of what a better gate returns accrues to the fields it gates rather than to itself: the
+promise field, published at weight $0.20$, behaves like $0.52$ when its gate recall improves
+and $0.43$ when its specificity does.
+
+%% 目的：第三段——兩者衝突、我們用測量裁決 → 誠實的負結果 → 收在「這兩個量在第一次投稿前就算得出來」，
+%%       那是本文對下一個參賽者的實際用處。
+The two prescribe opposite priorities, which we resolve for our system by measurement with a cascade model whose
+parameters are counted rather than fitted. Our one official run, developed with feedback from the
+public leaderboard, scored $0.6760$ public and $0.6405$ private. Gate recall yielded to ordinary engineering; the rare class did not. No
+general-purpose method we tried reached its one validation instance; the one confirmed test
+catch came out of a search against leaderboard feedback, not a detector. Both consequences can be priced before a
+first submission, from the task definition and one validation run.
+
+Code: \url{https://github.com/yayayouyou/ai_cup_GreenReport_Yayou_Eason}.
+\end{abstract}
+
+\keywords{ESG promise verification, greenwashing, rare-class evaluation, effective weights,
+cascaded label schemas, macro-F1, error propagation, validation protocols, Traditional Chinese}
+
+\maketitle
+\pagestyle{plain}
+
+%% --- NTCIR-required unnumbered metadata sections (after keywords, before Section 1) ---
+\section*{Team Name}
+TEAM\_10049
+
+\section*{Subtasks}
+Promise Identification, Evidence Identification, Clarity (Evidence Quality) Classification,
+and Timeline Classification (Traditional Chinese).
+
+%% ============================================================
+%% SECTION 1 --- sections/01_introduction.tex
+%% ============================================================
+\input{sections/01_introduction_1}
+
+\input{sections/02_related_work}
+\input{sections/03_task_and_cascade}
+\input{sections/04_method}
+\input{sections/05_setup}
+\input{sections/06_results}
+\input{sections/07_error_analysis}
+\input{sections/08_discussion}
+\input{sections/09_conclusion}
+
+\begin{acks}
+We thank the AI CUP 2026 VeriPromiseESG organizers for constructing and releasing the
+VeriPromiseESG4K corpus, and the Ministry of Education AI CUP program office.
+\end{acks}
+
+\balance
+%% Bibliography is INLINED (sections are \input'ed, so this is the same pattern).
+%% Overleaf free-plan compiles timed out; dropping the BibTeX pass and the extra
+%% XeLaTeX pass it forces is the single biggest saving available, and it also removes
+%% BibTeX's parse errors from the log. refs.bib stays in the project as the source of
+%% truth -- bibliography.tex carries regeneration instructions in its header.
+\bibliographystyle{ACM-Reference-Format}
+\input{bibliography}
+
+\end{document}

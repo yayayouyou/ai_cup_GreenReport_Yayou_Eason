@@ -1,0 +1,52 @@
+\section{Related Work}
+
+%% 目的：ESG NLP／promise 驗證這一支。先講別人做什麼（偵測宣稱），再把缺口提到主題句的位置——原本缺口
+%%       是藏在六項括號之後的從屬子句。最後點名 CLaC 是最接近的一篇，並誠實說明差別：原句寫「we derive
+%%       that ratio from the scorer」是假的，評分器導出的 promise:evidence 是 0.48:0.52，幾乎和 CLaC
+%%       手調的 0.6:0.4 相反；真正的差別是我們不手調。
+\leadin{Promise verification and ESG NLP.} ESG NLP mostly detects claims: environmental
+claims~\cite{stammbach2023environmental} or cheap talk~\cite{bingler2022cheaptalk}.
+ML-Promise~\cite{seki2025mlpromise} defined the four fields and the gating rules
+Section~\ref{sec:intro} sets out; SemEval-2025 Task~6~\cite{chen2025semeval} ran them as a
+five-language shared task, and Veri\-Promise\-ESG4K~\cite{day2026veripromiseesg4k} is the Traditional
+Chinese corpus on that schema. The organizers argue for macro-F1 over accuracy on this
+data~\cite{huang2025rocling}; we ask what macro-F1 rewards once the schema gates the fields.
+Most published systems on this schema treat the four fields as separate
+problems~\cite{nishi2025wcteam,leesombatwathana2025cscu,wu2025cyut}. CLaC~\cite{turk2025clac} comes
+closest, training promise and evidence jointly with hand-set loss weights of $0.6$ and $0.4$. We
+set none, and the scorer prices the pair differently: our gate's return split almost
+evenly between those two fields (Section~\ref{sec:res:weight}).
+
+%% 目的：級聯誤差的既有文獻。常見解法（往下游傳不確定性）在硬標籤評分下失效；評測慣例方向也相反——H-loss
+%%       對「父節點已錯」的錯誤少收錢，這裡卻是一個 promise 錯誤同時把錯誤送進三個欄位。原句寫「this metric
+%%       charges more」，最近的 metric 是 H-loss，讀起來變成 H-loss 又少收又多收。段末新增 cost-sensitive
+%%       的定位，那是這篇最容易被審稿人問「這不就是 cost matrix 嗎」的地方，原本無話可答。
+\leadin{Cascading errors.} Error propagation is long known, in hierarchical
+classification~\cite{silla2011survey} and in NLP pipelines, where the usual fix is to pass
+uncertainty downstream instead of one hard decision~\cite{finkel2006cascading}. That fix does not
+change the accounting: the official scorer takes one hard class per field, scored against gold
+that cascades (Section~\ref{sec:lemma}), so any system is still priced through the gate. Hierarchy-aware measures such as the H-loss~\cite{cesabianchi2006incremental}
+charge \emph{less} for an error made under a parent that is already wrong. The composite does the
+opposite: one wrong promise, once cascaded, puts an error into up to three other fields. Cost-sensitive
+classification takes a cost matrix as an
+input~\cite{elkan2001foundations}; here the costs are not supplied but
+implied by the scorer, and differ by direction within one field.
+
+%% 目的：名目權重 vs 有效權重的教育測量傳統。關鍵是分清「他們的是份額、會縮小」與「我們的是導數、會放大」，
+%%       否則讀者會把份額的讀法帶到 0.52 上，以為 promise 佔了總分一半。原本 Aggregation 那個 leadin 只有
+%%       兩句一個主張卻自成一節，併進來。
+\leadin{What a weight is worth.} Educational measurement separated nominal from effective
+weights~\cite{wang1970differential}: in one state's school ratings, an indicator published at
+$40\%$ is worth $28.7\%$~\cite{shear2024nominal}. Those effective weights are shares of a fixed
+total, and that one shrinks. Ours is a derivative at one operating point along one direction of
+improvement, so promise's $0.20$ becomes $0.52$, and the four need not sum to anything. It
+arises from gating and class averaging, not from correlation among the fields.
+
+%% 目的：IR 評測的顯著性／檢定力傳統，接到「支持數才是樣本數」與我們自報種子變異與 bootstrap 解析度的做法。
+%%       原本這段把同一件事講了三次（forward ref 到 §8、又說 including one that fails them、§1 還有一次）。
+\leadin{What an evaluation can resolve.} IR evaluation has long asked about significance, power
+and sample size~\cite{sakai2016systematic}; Section~\ref{sec:lemma} asks the sample-size question per class, where
+support, not item count, sets what a macro-F1 term resolves. The organizers' fixed split inherits the optimism of standard
+splits~\cite{gorman2019standard}, and single runs prove little~\cite{dodge2019showwork}, so we
+report seed variability and bootstrap resolution beside the deployed ensemble decision, which does
+not survive them.

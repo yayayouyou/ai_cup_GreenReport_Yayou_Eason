@@ -1,0 +1,104 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{What our validation set was actually measuring}
+
+%% 目的：把「光是換評分慣例」造成的偏差量出來，並和任何建模增益比大小。原本的階梯用 R0--R3 當標籤，但 R1/R2
+%%       在 §3.3 已經被綁定為 schema 的兩條門控規則（§4.1、§4.3、§7.1 都在用），寫出 "R1->R2" 讀者會把
+%%       本文最重要的估計偏差結果讀成關於門控規則的陳述。改用 L0--L3。
+\begin{table}[t]
+\centering\footnotesize
+\caption{One fixed prediction set, four scoring conventions; each rung changes exactly one
+factor. ``N/A'' is whether N/A enters the quality and timeline averages.}
+\label{tab:ladder}
+\begin{tabular}{@{}lllcr@{}}
+\toprule
+ & Sample & Label set & N/A & $S$ \\
+\midrule
+L0 & held-out fifths ($200\times$) & present in draw & scored & 0.6360 \\
+L1 & held-out fifths ($200\times$) & fixed schema & scored & 0.6302 \\
+L2 & full val-1000 & fixed schema & scored & 0.6355 \\
+L3 & full val-1000 & fixed schema & excluded & \textbf{0.6095} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Holding one configuration's predictions fixed and changing only the scoring protocol gives the
+four-rung ladder of Table~\ref{tab:ladder}, each step a change of exactly one factor. The
+data-dependent label set costs $-0.0058$ (L0$\to$L1); held-out subsampling, the only step that
+changes the evaluation sample, returns $+0.0053$ (L1$\to$L2); and the proxy metric against the
+official one --- the largest step, and a change of estimand, since the proxy scores a class the
+official metric excludes --- costs $-0.0260$ (L2$\to$L3). That is $-0.0265$ in all, larger than
+any gain our ensemble or decision-layer work returned --- Section~\ref{sec:system}'s one
+preprocessing step is worth $+0.0286$ at a single seed --- invisible in a loss curve, and
+concentrated in one step that is a convention, not a modelling choice.
+
+%% 目的：同一個慣例在 test 上值多少（+0.0242），以及為什麼即時排行榜的讀數不在 schema 類別集上。
+%%       「為何在我們身上只有 -0.0058」的機制解釋已刪——數字留在階梯裡，機制是解釋不是發現。
+The label-set step averages over the classes \emph{present} in a draw rather than over the
+schema~\cite{opitz2019macro}, silently deleting a support-1 class whenever the system predicts
+none of it either; the schema's refusal to let a head abstain springs that trap harmlessly here.
+The same default on the released test labels raises our
+$0.6275$ to $0.6517$, $+0.0242$; none of $3{,}000$ random splits of the $2{,}000$ test items
+reproduces the leaderboard pair of Section~\ref{sec:res:main} under the schema set, while splits
+under this default land within $0.001$ of it.
+
+%% 目的：叢集重抽樣的稽核，接到「1000 筆驗證集連種子差異都分辨不了」。原本還報「隨機 K-fold 把
+%%       4 個決策弄反 3 個」，但同一句自己就說那和碰巧分不出來——先刪我們自己已經聲明不可靠的主張。
+Company-clustered resampling widens the interval by only $3.3\%$ (intraclass correlation, ICC, $\le 0.034$), so the
+company leakage documented for random $K$-fold~\cite{gorman2019standard} does not widen the intervals here: group
+when \emph{fitting}, and measure the ICC before widening \emph{intervals}. That half-width is
+$4.2$ times the pooled seed SD of $0.0055$, so a 1{,}000-item validation set cannot resolve
+seed-level differences~\cite{dodge2019showwork}.
+
+%% 目的：我們自己有一個部署決策落在那個解析度之下。原句結尾「we shipped the other for reasons it could not
+%%       see」沒指名任何理由，而且和「roster 是在驗證集上選的」互相矛盾——14-model 根本不在那八個候選裡。
+\paragraph{One of our own decisions falls below that resolution.}
+On validation the 14-model ensemble scores $0.6108$ and the roster we deployed $0.6095$:
+validation preferred the one we did not ship, by $0.0013$; a paired bootstrap of the difference spans $[-.0116,+.0143]$. On
+the released labels, compared like for like with the hand-forced items removed from both, the
+deployed roster leads by $0.0225$, a leaderboard-informed comparison. The 14-model ensemble was never in the eight-candidate search
+of Section~\ref{sec:system}; we compared the two afterwards, on a difference the split cannot
+resolve, and shipped the subset. Reporting variance is necessary but not
+sufficient~\cite{leesombatwathana2025cscu}: we also ask whether each deployed decision clears it.
+
+\subsection{What did not work, and what we cannot claim}
+\label{sec:disc:limits}
+
+%% 目的：負面結果。
+\paragraph{Negative results.}
+All on validation. Domain-adaptive pretraining on 84{,}119 lines of
+external ESG report text added nothing over task-adaptive pretraining; QLoRA fine-tuning of a 7B
+decoder reached $0.5084$, below both our encoder ensemble ($\approx 0.61$) and few-shot prompting;
+backbones retrained for minority recall raised it individually but lowered the ensemble's score; and six timeline-boundary
+interventions all failed. We have no account of that last one.
+
+%% 目的：限制。最傷的那個承認（「在總分層級這個模型買不到任何『假設兩切分相似』得不到的東西」）
+%%       放在最前面。單一語料、無乾淨外部檢查兩個補充性但書已刪；讓宣稱不致誇大的那些全部留著。
+\paragraph{Limitations.}
+For the cascade model, on test, promise
+and evidence reproduce exactly --- identities, not predictions --- so the check reads only on
+quality and timeline, where the model is off by $0.0641$ and $0.0319$; almost all of the quality
+residual is the hand-applied override, and removing it leaves $+0.0195$. Against the
+submitted test total of $0.6275$, quoting the validation total unchanged is off by $0.0180$ and
+the model by $0.0177$:
+\textbf{at that level the model buys nothing a reader could not get by assuming the two splits are
+alike.} Its value is the decomposition, not the prediction. The detector decisions predate the
+labels but not the leaderboard, which priced every submission, so
+Section~\ref{sec:errors:mis}'s $1/5$ and $1/3$ record what we staked, not what a detector
+achieved.
+
+\subsection{Implications for metric design}
+\label{sec:disc:metric}
+
+%% 目的：給主辦方的三條建議。原本開頭寫「The measurement supports excluding N/A」——那和 §1 明說的
+%%       「這不是在批評評分設計，權重是主辦方的事」以及 §3.1 的「we take the official scorer as given」
+%%       直接衝突，而且我們量到的是「這個慣例很要緊」，不是「主辦方選對了」。
+We take the exclusion of N/A as given (Section~\ref{sec:metric}) and propose three additions, not
+replacements. A conditional-on-gate downstream score beside the official composite would credit
+downstream skill without changing the ranking. Per-partition rare-class supports, published once
+an evaluation closes, would let participants attribute score movements to the partition rather
+than to the system: a quality class of support $s$ lands entirely in one partition with
+probability of order $2^{1-s}$, and by Lemma~1 carries $0.1167$ either way. And a strict cascade cannot represent
+misleading framing that accompanies no promise (Section~\ref{sec:errors:mis}), which a task
+measuring greenwashing may want to permit.

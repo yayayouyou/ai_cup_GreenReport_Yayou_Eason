@@ -1,0 +1,40 @@
+\subsection{Setup}
+\label{sec:setup}
+
+%% 目的：交代切分、實驗協定與評分器的重新實作（與官方 baseline 核對過），並誠實標明兩個在驗證集上做的搜尋。
+\leadin{Data, protocol, and scorer.}
+Models are fitted on train-1000; every modelling number below is on val-1000, verified disjoint
+from all training pools by item id, and results that use the released test labels are marked.
+Validation is a held-out proxy only in a qualified sense: the decision layer of
+Section~\ref{sec:system} is fitted on it, two searches included --- the ensemble roster and the
+rule weights --- and we do not pool the splits into $K$-fold. Section~\ref{sec:discussion} audits
+what both cost. The public leaderboard was in the loop too: during the evaluation we kept or
+dropped system variants on its readings, so every score or rate measured for our system on test here,
+the private score included, is leaderboard-informed rather than an independent estimate. We re-implemented the official scorer
+(Eq.~\eqref{eq:score}) rather than call a library default~\cite{opitz2019macro}. The organizers'
+baseline script cannot check it --- it averages N/A into quality and timeline and lists a
+timeline label the released files never use, moving identical predictions by $+0.0059$ --- and
+neither can the live leaderboard, whose readings for our own submission are not
+reproducible from the released labels under the schema label set (Section~\ref{sec:res:main}).
+
+%% 目的：揭露並修正一個只在驗證集發生的 gold 洩漏。原本這段給了四個分數差（-0.0353／+0.0028／
+%%       0.0731->0.0350），但那組數字解出來的測試分數約 0.575，全篇任何地方都沒有這個數，而且和
+%%       §5.1 說的 val-test 差距 0.0112 不一致——它們量的是 14-model 那條血統。改成報「規則實際觸發
+%%       了幾列」，那是今天在兩個切分上都重新驗證過、且屬於我們這條血統的量。
+One defect in our own instrument belongs here. The three data-only rules guard on
+\texttt{promise\_status}, which the validation file carries and the test file does not, so the
+same code was a different function on the two splits: on validation it forces N/A on 187
+evidence, 187 timeline and 332 quality rows, every one explained by the gold field; with the
+field hidden, as on test, it fires on none. We blind the guard, so every validation number in this
+paper, including those already quoted above, is post-correction.
+
+%% 目的：交代硬體、種子與可重現性（含 repo 連結），支撐後面所有「種子層級變異」的論述。
+%%       原句 "is its seed-42 deployed" 是壞句子，備份顯示原意是「部署的是 seed 42 那一個」。
+\leadin{Hardware, seeds, reproducibility.}
+Fine-tuning ran on one RTX~3090 in a version-pinned image, with seeds
+$\{7,13,42,67,69,99,777,2024\}$ trained for each of the four \textsc{strong4} configurations;
+those, with one length variant per configuration, give 36 of Section~\ref{sec:res:swap}'s 42 sources, and
+the remaining six are single models. Every deployed member, upstream and downstream, is its
+seed-42 run. Every analysis is CPU-only; code, predictions for all 42 binary sources, and
+regeneration commands are at
+\url{https://github.com/yayayouyou/ai_cup_GreenReport_Yayou_Eason}.

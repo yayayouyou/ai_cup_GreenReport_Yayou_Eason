@@ -1,0 +1,154 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{An analytical model of the cascade}
+\label{sec:model}
+
+%% 目的：銜接段。原句只說「需要一個模型」——那是敘事不是物件；改成講清楚這個模型的輸入輸出契約，
+%%       讀者讀完 §4.1 要能一句話說出模型是什麼。
+The lemmas price a class and a gate in principle; pricing the operating point a system actually
+reaches needs an accounting identity: counted gate and head rates in, per-class
+$\mathrm{TP}$ and $\mathrm{FP}$ out, hence $S$.
+
+%% 目的：定義三道門與兩個操作點參數。原本只給了 $g^T$、$g^Q$，漏掉 evidence 也被 promise 門控，
+%%       讀者會以為 evidence 沒有門——而四句之後又說關門只在 evidence 傷精確率。由 Lemma 2 可知 $\varphi_E=\varphi_T$。
+\leadin{Gates.} Evidence and timeline are gated by the predicted promise; quality is gated by
+that and by the predicted evidence. A head emits a real class only when its gate is open,
+mirroring R1/R2 on the prediction side; after the repick of Section~\ref{sec:system} an open gate
+always emits one. Write
+$\rho=\Pr(\hat{P}{=}\text{Yes}\mid P{=}\text{Yes})$ for the recall of the promise decision, which
+drives all three gates, and $\varphi_f=\Pr(g^{f}{=}1\mid\text{gold }f{=}\text{N/A})$ for the rate
+at which field $f$'s gate opens when it should not. By Lemma~2 timeline and evidence share that
+rate, $\varphi_E{=}\varphi_T$, the promise false-positive rate; quality's second gate is counted
+separately.
+
+%% 目的：級聯的核心恆等式。原本 $R_c$ 定義完就再也沒用過，而且理由寫成「real gold class implies an open
+%%       gold gate」——$\gamma_c$ 和 $r_c$ 條件的都是「預測的門」，用 gold 那邊的前提證不了這件事。
+%%       真正的理由是關著的門只吐 N/A，那是輸出端的事實。
+\leadin{Recall factorises.} For downstream field $f$ and real class $c$, with
+$\gamma_c=\Pr(\text{open}\mid\text{gold }f{=}c)$ and
+$r_c=\Pr(\hat{f}{=}c\mid\text{open},\text{gold }f{=}c)$,
+\begin{equation}
+R_c \;=\; \Pr(\hat{f}{=}c\mid\text{gold }f{=}c) \;=\; \gamma_c\cdot r_c,
+\label{eq:factor}
+\end{equation}
+exact because a closed gate emits N/A and nothing else. Errors multiply rather than add, and
+$\gamma_c$ is class-conditional: the gate can close disproportionately on the small classes, which
+Lemma~1 prices the same as the large ones.
+
+%% 目的：三個機制的收支。原本的 $\mathrm{FP}_c$ 只有兩項、都條件在「門開著」，第三個機制（關門）在式子裡
+%%       完全不存在——但 evidence 的 N/A 是計分類別，照原式算 $\mathrm{TP}_{N/A}$ 和 $\mathrm{FP}_{N/A}$ 都是 0，
+%%       而 M_E 卻宣稱重現到 0.0000。程式（cascade_model.py:44）其實有這一列，是論文漏寫。
+%%       另外 $K_f$、$r_c$、$u_c$ 是同一個矩陣的三個名字，正規化從未交代。
+\leadin{Three mechanisms, and the row they need.} Let
+$K_f[c'{\to}c]=\Pr(\hat{f}{=}c\mid\text{open},\text{gold }f{=}c')$ be row-conditional, so its
+diagonal is $r_c$ and its N/A row $u_c$ the false-open propensity. Two mechanisms put a false
+positive on a real class $c$: confusion inside an open gate, and a gate that opens on a gold N/A.
+Both are rows of $K_f$, so with gold support $n_{c'}$ and $\gamma_{\text{N/A}}{:=}\varphi_f$,
+$\mathrm{FP}_c = \sum_{c'\neq c} n_{c'}\gamma_{c'}K_f[c'{\to}c]$ over real classes and N/A alike,
+and $\mathrm{TP}_c=n_cR_c$. The third is gate \emph{closure} on a gold-real item: the head emits
+N/A, which in quality and timeline matches no scored class
+(Section~\ref{sec:metric}), so the error is a false negative for the gold class and a false
+positive for none. In evidence N/A is scored, so the model needs its row,
+$\mathrm{TP}_{\text{N/A}}=n_{\text{N/A}}(1{-}\varphi_E)$,
+$\mathrm{FN}_{\text{N/A}}=n_{\text{N/A}}\varphi_E$ and
+$\mathrm{FP}_{\text{N/A}}=(n_{\text{Yes}}{+}n_{\text{No}})(1{-}\rho)$ --- every gold-real item
+whose gate shut. Per-class $F_{1,c}$ and $S$ follow (Eq.~\eqref{eq:score}).
+
+%% 目的：有效權重。原式 $\partial S/\partial M_P = \sum_f w_f \partial M_f/\partial M_P$ 是錯的：$S$ 對四個
+%%       macro 是線性的，照字面讀就等於 $w_P = 0.20$，和 0.5216 自相矛盾；而且四個 macro 都是同一個操作點的
+%%       函數，不能固定三個動一個。程式算的是同一條純量路徑上兩個方向導數的比值（中央差分，步長 1e-4）。
+\leadin{Effective weight.} Let $\theta$ parameterise one direction of improvement, everything else
+held at the measured operating point. Extending~\cite{wang1970differential},
+\begin{equation}
+W_{\mathrm{eff}}(P;\theta)\;=\;\frac{\mathrm{d}S/\mathrm{d}\theta}{\mathrm{d}M_P/\mathrm{d}\theta}
+\;=\;w_P+\sum_{f\neq P} w_f\,
+\frac{\mathrm{d}M_f/\mathrm{d}\theta}{\mathrm{d}M_P/\mathrm{d}\theta},
+\label{eq:weff}
+\end{equation}
+both derivatives taken on the counted model by central difference at step $10^{-3}$. Section~\ref{sec:intro}'s
+two directions are priced separately: gate recall $\theta{=}\rho$, gate specificity
+$\theta{=}-\varphi_f$. Along recall, $w_P{=}0.20$ picks up $0.3216$ from the
+three fields promise does not name (Section~\ref{sec:res:weight}).
+
+\subsection{Identification by counting: zero tuned parameters}
+\label{sec:identify}
+
+%% 目的：可證偽性。原句「zero free parameters, which is what makes the model falsifiable」是不成立的推論：
+%%       零參數但從同一份資料數出來的代數重寫，恰恰是那份資料無法否證的。數出來真正買到的比較弱也比較實在。
+Every quantity above is a conditional frequency, counted off labelled data rather than fitted. On
+val-1000: $\rho=0.9828$ ($n{=}813$), $\varphi_E{=}\varphi_T=0.4385$ ($n{=}187$) and
+$\varphi_Q=0.4307$ ($n{=}332$), plus the head matrices $K_f$ and the class-conditional $\gamma_c$.
+No optimizer, no fitted constant, no held-out tuning: \emph{zero tuned parameters}, so nothing can
+be tuned toward the score the model reproduces.
+
+%% 目的：v1/v2 兩個變體，殘差本身是診斷。但要誠實：參數是從同一批 val 預測數出來的，前向模擬重現它們
+%%       接近恆等式而不是成就；真正要求它做的事在 §6.2（換上游、預測沒被動過的欄位）。
+We compare two variants: v1 gives every class one gate recall, v2 uses the measured
+class-conditional $\gamma_c$. Forward simulation under v2 then reproduces all four scored field macros at
+$\Delta=0.0000$, while v1 overshoots the total by $+0.0022$. Reproduction is near-tautological ---
+the parameters were counted off the same predictions --- so $\Delta$ measures only what a
+parameterisation discards, and the residual is the diagnostic
+(Section~\ref{sec:res:swap}). We use v2, and put the real demand on transfer and on the
+decomposition, which is falsifiable in the obvious way: a finite improvement should land where the
+derivative says it will.
+
+\subsection{The system under the model}
+\label{sec:system}
+
+%% 目的：多任務編碼器。conditional masking 是在 gold 門後面訓練、卻在預測門後面跑——那個落差正是 $u_c$
+%%       必須另外數的理由，原本完全沒說。$+0.0286$ 也要標明它只有一個種子，否則和 §2 自己的承諾衝突。
+\leadin{Multi-task encoder.} A shared Chinese encoder carries four heads. \emph{Conditional
+masking} restricts detail-head losses to gold-promise${=}$Yes items, so they learn $r_c$
+(Eq.~\eqref{eq:factor}) and never re-learn the gate. They train behind the gold gate but run
+behind the predicted one, which admits about 82 gold-N/A items they never saw: hence $u_c$ is
+counted, not read off training. The rest of the recipe is standard and carries no part of the
+argument; the repository lists it. One preprocessing step is not. \emph{Selective
+full-width normalisation} maps full-width digits and Latin letters to half-width while preserving
+Chinese punctuation, which full NFKC corrupts; isolated on a CKIP-BERT baseline it is worth
+$+0.0286$ at one seed.
+
+%% 目的：決策層。原本說 thresholds 調在「the N/A-excluded metric」——那和 Table 1 矛盾（N/A 在 evidence 是
+%%       計分的），會把整個第二結論的不對稱性抹掉。
+\leadin{Decision layer.} Fitted on validation and applied unchanged to test: per-model, per-field
+calibration; $F_1$-weighted soft voting; three data-only rules as weight-3 votes; a Bayes prior
+at $\alpha{=}0.5$ on the released \texttt{esg\_type} column (each paragraph's E/S/G pillar tag);
+and schema compliance --- R1/R2 plus a
+\emph{repick} of a real class wherever an open gate met an N/A head. Thresholds are tuned on the
+official metric itself.
+
+%% 目的：把 §4.1 的結論落到工程分工。原本寫「By Eq.(weff), upstream recall comes first」但沒給理由，而且
+%%       表面證據反著走：可修的 false open 有 82 個、漏掉的 positive 只有 14 個，是 6.1 倍的分數。真正的
+%%       支持在 44 個二元來源上：promise 自己的 macro 幾乎只跟 specificity 走（-0.71），總分卻跟 recall 走
+%%       （+0.45 對 -0.26）——這正是本文命題的縮影。
+\leadin{Allocation of effort.} Eq.~\eqref{eq:weff} prices both directions far above $w_P{=}0.20$,
+and the raw headroom favours specificity: $\varphi_T$ leaves 82 repairable false opens against
+$\rho$'s 14 missed positives. Across the 42 promise/evidence sources of
+Section~\ref{sec:res:swap}, promise's own macro-$F_1$ tracks specificity and is \emph{blind} to
+gate recall ($r{=}{-}0.74$ against $\varphi$, ${-}0.00$ against $\rho$), while the composite
+rewards recall ($+0.37$ against $\rho$, $-0.27$ against $\varphi$): what the field's own score
+cannot see, the composite pays for. We buy recall: promise / evidence gets a
+cross-family ensemble, subset-selected by exhaustive search over eight candidates (fit on
+train-1000, selected on val-1000, not held out for this choice). Four survive (\textsc{strong4} $=$ ckip-tapt $+$ macbert-tapt $+$ bge-m3 $+$
+bge-m3-tapt), raising promise/evidence from $0.8036/0.6767$ to $0.8148/0.7083$, buying
+$\rho$ ($+0.0098$) and conceding $\varphi$ ($+0.0107$);
+Section~\ref{sec:res:main}'s diluted seven-model vote puts three of the four rejected candidates
+back.
+
+%% 目的：交代「全文只描述並分析一個系統」，以及它的驗證側是怎麼重建的。原本這些和上一段擠在同一個 232 字
+%%       的段落裡，"Its" 有三個可能的先行詞。手動改過的五筆也從子句裡拉出來獨立成句。
+\leadin{One system throughout.} \textsc{strong4} supplies promise and evidence; the downstream
+fields come from a calibrated ensemble of 14 multi-task checkpoints over six pretrained encoders,
+disjoint from the eight binary candidates. Its validation side is reconstructed by splicing
+\textsc{strong4} into that frozen downstream, which scores $0.6095$ against the shipped build's
+own $0.6087$ --- a gap of $0.0008$, inside the seed-level spread. Five \textsc{Misleading} test
+predictions were set by hand rather than emitted by the model, and staked against leaderboard
+feedback, so the rare-class part of the test composite is a search result, not a model output
+(Section~\ref{sec:res:price}).
+
+%% 目的：Lemma 1 決定稀有類別的工程取向。原句「the detector is precision-first」用定冠詞介紹一個從未出現過
+%%       的偵測器，而且整句沒提到它偵測什麼。$F_{1,c}=2/(k+1)$ 正是精確率優先的理由，補上。
+\leadin{The rare class.} Lemma~1 governs the rest: at $n_c{=}1$ a class scores $2/(k{+}1)$ on $k$
+predictions, so a detector that fires often destroys the coefficient it is chasing. Ours fires
+only on agreement among several LLMs, on a mismatch between a promise's subject and that of its
+cited evidence.

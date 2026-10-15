@@ -1,0 +1,94 @@
+\section{Error Analysis}
+\label{sec:errors}
+
+%% 目的：用「相對於 promise 門控的位置」給錯誤分類。原本的 taxonomy 表已刪（兩列內容散文裡都有），
+%%       兩段中文逐字引文改為嵌在正文並補上英文直譯——對不讀中文的讀者反而比表格好懂。
+We index errors by position relative to the \emph{promise} gate --- \emph{gate} errors propagate
+into three fields, \emph{conditional} errors occur with the gate correctly open --- and their
+counts are the $n$ column of Table~\ref{tab:oracle}.
+
+%% 目的：門控錯誤是標註慣例造成的，不是語言問題。原句「The surface cues are absent」被自己的統計否證——
+%%       45.6% 沒有未來標記，代表 54.4% 有，那對多數而言恰恰就是模型的疏漏。改成只主張數字支持的部分。
+%%       0.5216/0.4268 這裡是第四次出現（摘要、§1、RQ1 各一次），刪；0.012/0.072 標明是一階近似。
+\paragraph{Gate false negatives are largely an annotation convention, not a language problem.}
+Most gate false negatives reflect the convention that an \emph{already executed} measure still
+counts as a promise: 9 of our 14 carry gold timeline \texttt{already}, one of them reporting
+\zh{「}2024\zh{年門市生活垃圾共}101.12\zh{公噸，比去年減少}15.84\zh{公噸」} --- last year's
+tonnage against this year's, with no future marker anywhere in it. For nearly half of them
+the usual surface cues are absent --- of the 366 training items with
+\texttt{promise\_status}\,$=$\,Yes and timeline \texttt{already}, 167 ($45.6\%$) contain none of
+\zh{將}/\zh{目標}/\zh{未來}/\zh{規劃}/\zh{計畫}/\zh{承諾} --- because the measure described is not
+in the future. The gate is asymmetric (promise \texttt{Yes} F1 $0.943$ against \texttt{No} F1
+$0.686$, the latter at recall $0.561$), and its two directions are priced apart
+(Section~\ref{sec:res:weight}). Table~\ref{tab:oracle} prices the two repairs almost alike, $8.5$
+against $8.8$ in units of $10^{-4}$, but false opens are six times as common: to first order the
+recall side has $0.012$ of $S$ left to win and the specificity side $0.072$. Those totals are
+first-order: the 96 gate errors ($14{+}82$) are two repairs at one price, not one repeated.
+
+%% 目的：timeline 的弱點不是我們的模型造成的，是 schema 自己的預設規則造成的——這是給主辦方的觀察，
+%%       和 §7.3 第三條建議同一脈。evidence 與 quality 兩個 rubric 落差只留質性描述，四個測量值已刪。
+\paragraph{A label definition manufactures the weakest classes.}
+Conditional errors in evidence and quality are rubric mismatches: the model demands quantified
+execution data where the annotation accepts a named programme, and reads aspirational verbs as
+vagueness where the rubric rewards concrete anchors. Timeline's are not. There the schema itself
+supplies the weakness: \texttt{between\_2\_and\_5\_years} is its default ``when the promise does
+not state a completion year''~\cite{seki2025mlpromise}, and 171 of 238 gold b2\_5y training items
+($71.8\%$) contain no four-digit year. That class and \texttt{already} --- the two a convention
+assigns rather than a stated date --- are the field's weakest (F1 $0.595$ and $0.627$). Timeline
+is also the largest conditional group (266) and the cheapest per repair, and the one field we
+could not improve; Section~\ref{sec:disc:limits} counts the attempts.
+
+\subsection{The rare class: what four instances can show}
+\label{sec:errors:mis}
+
+%% 目的：誠實的負結果。原本的旗艦主張「recall on this class was not obtainable by any method we applied」
+%%       被它自己表格的最後一列否證——那一列說我們的 subject-mismatch 測試「flagged it」。真正的區別是
+%%       那個測試是讀過那筆資料之後才寫出來的，而論文從未說。主張改窄，表格那一列也標明。
+Precision on this class was bought by hand (Section~\ref{sec:res:price}); recall is what failed.
+Section~\ref{sec:res:price} puts \textsc{Misleading}'s $0.1167$ above the entire cascade headroom
+of $0.0319$, so if it could be \emph{found}, Lemma~1 would make everything else here secondary.
+Every method below was run against the single gold instance on val-1000 during the evaluation
+period --- \zh{「環境、社會及治理成果指標（溫室氣體排放密集度及取水密集度）連結」}, an executive
+share-award scheme tied to ESG metrics, which the gold labels call \textsc{Misleading} and every
+method here but the last called \texttt{Clear}.
+
+{\centering\footnotesize
+\begin{tabular}{@{}p{0.50\columnwidth}p{0.44\columnwidth}@{}}
+\toprule
+\textbf{Method} & \textbf{Outcome on the one gold item} \\
+\midrule
+deployed system & gate open, predicted \textsc{Clear}; the repick puts 35 val-1000 items in the class, none of them this one \\
+efficient-tier multifield LLM, two vendors & 0 items flagged in 1{,}000 \\
+larger variants of the same two & no improvement; both scored lower overall \\
+knowledge-grounded prompt, 53-term ESG term base & 15 flagged against gold~1; quality macro
+$-0.19$ overall \\
+three-model panel with a reasoning judge & flagged a \emph{different} candidate, missed this one \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{written after reading the gold item}} \\
+promise/evidence subject-mismatch test with entity grounding & flagged it; 0 false positives on
+validation \\
+\bottomrule
+\end{tabular}\par}
+
+%% 目的：說明「留下來的是一個測試而不是分類器」，並誠實標明它是事後寫的——沒有這句，招牌負結果
+%%       會被上面那張表的最後一列否證。兩條經驗法則已刪（是機制不是宣稱）。
+None of the general-purpose methods we tried found the class's one validation instance. What the
+failures leave is a test rather than
+a classifier: a \emph{specific, dated or quantified} claim paired with evidence consisting
+\emph{only} of honours whose subject is unrelated to it. It was written after reading the instance it
+had to find, so it fits a known example rather than recalling the class.
+
+%% 目的：測試集上的結果，以及為什麼那 1/5 與 1/3 不是偵測器的成績。原句「we cannot separate what the test
+%%       found from what the detector did」把同一個東西和自己對比。
+The released test labels show why our mismatch test was not enough. The class has support 3 there; we staked
+five items during the evaluation, the survivors of 38 candidates, with the leaderboard as the
+only feedback available, and one is correct: precision $1/5$ and recall $1/3$. We report those as counts, not as a detector result ---
+staking against live feedback is a search, and we cannot separate what the search found from what
+the test did. Both misses are instructive. One attaches ESG oversight to a board-appraisal
+mechanism --- the same instrument-substitution structure as the validation instance, which the
+detector, tuned to the accolade form, did not reach. The other
+restates the promise as its own evidence, a structure absent from both known instances: across the
+four we have read closely we see three structures, and none repeats often enough to fit. Part of the
+phenomenon is not expressible at all: one ML-Promise row carries that judgement with
+\texttt{promise}${=}$No, which R1 forbids. Greenwashing that
+accompanies no promise is a form this cascaded schema cannot score.

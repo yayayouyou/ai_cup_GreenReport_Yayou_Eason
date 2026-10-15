@@ -1,0 +1,13 @@
+NotoSerifTC-paper-subset.ttf
+============================
+Derived from Noto Serif TC (Google), licensed under the SIL Open Font License 1.1,
+which explicitly permits subsetting, modification and redistribution.
+
+The source (NotoSerifTC-VF.ttf) was instantiated at its default master and subset to
+the 141 non-ASCII characters used in this paper. Regenerate with:
+
+    python paper/make_font_subset.py
+
+Reserved Font Name: none is claimed here; the file is renamed away from "Noto Serif TC"
+as OFL requires for modified copies.
+Full OFL text: https://scripts.sil.org/OFL
