@@ -98,6 +98,29 @@ See [METHODOLOGY.md](METHODOLOGY.md) for the full method and [REPRODUCE.md](REPR
 
 > Misleading detection (prompt + models + candidate list): [docs/MISLEADING.md](docs/MISLEADING.md)
 
+## Authors
+
+| | GitHub | Affiliation |
+|---|---|---|
+| Ya-You Shih (yayou) | [@yayayouyou](https://github.com/yayayouyou) | National Central University |
+| Yi-Hsin Wang (Eason) | [@Eason20050201](https://github.com/Eason20050201) | National Taiwan Normal University |
+
+The accompanying NTCIR-19 paper is co-authored with Chia-Hui Chang (National Central University).
+
+## Citation
+
+If you use this code, please cite our NTCIR-19 paper:
+
+```bibtex
+@inproceedings{shih2026team10049,
+  title     = {{TEAM\_10049} at the {NTCIR-19} {AI CUP} {VeriPromise ESG} Track: What a Field Is Really Worth under a Gated, Rare-Class Metric},
+  author    = {Shih, Ya-You and Wang, Yi-Hsin and Chang, Chia-Hui},
+  booktitle = {Proceedings of the 19th NTCIR Conference on Evaluation of Information Access Technologies},
+  address   = {Tokyo, Japan},
+  year      = {2026}
+}
+```
+
 ## License
 
 The source code in this repository is licensed under the **GNU Affero General Public
