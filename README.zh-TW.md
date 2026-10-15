@@ -90,6 +90,29 @@ REPRODUCE.md  / REPRODUCE.zh-TW.md       逐步重現
 
 > Misleading 偵測(提示詞 + 模型 + 候選清單):[docs/MISLEADING.zh-TW.md](docs/MISLEADING.zh-TW.md)
 
+## 作者
+
+| | GitHub | 單位 |
+|---|---|---|
+| 石亞右（yayou） | [@yayayouyou](https://github.com/yayayouyou) | 國立中央大學 |
+| 王翊鑫（Eason） | [@Eason20050201](https://github.com/Eason20050201) | 國立臺灣師範大學 |
+
+配套的 NTCIR-19 論文另與 Chia-Hui Chang 教授（國立中央大學）共同撰寫。
+
+## 引用
+
+若使用本程式，請引用我們的 NTCIR-19 論文：
+
+```bibtex
+@inproceedings{shih2026team10049,
+  title     = {{TEAM\_10049} at the {NTCIR-19} {AI CUP} {VeriPromise ESG} Track: What a Field Is Really Worth under a Gated, Rare-Class Metric},
+  author    = {Shih, Ya-You and Wang, Yi-Hsin and Chang, Chia-Hui},
+  booktitle = {Proceedings of the 19th NTCIR Conference on Evaluation of Information Access Technologies},
+  address   = {Tokyo, Japan},
+  year      = {2026}
+}
+```
+
 ## 授權條款
 
 本 repository 的原始碼採 **GNU Affero 通用公共授權條款第 3 版(AGPL-3.0)** —— 一種
